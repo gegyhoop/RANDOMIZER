@@ -48,6 +48,11 @@ public class SettingsActivity extends AppCompatActivity {
         count = createField("Počet souborů", String.valueOf(settings.getCount()));
 
         anonymous = new CheckBox(this);
+        layout.addView(server);
+layout.addView(share);
+layout.addView(source);
+layout.addView(target);
+layout.addView(count);
         anonymous.setText("Anonymní přihlášení");
         anonymous.setChecked(settings.isAnonymous());
 
