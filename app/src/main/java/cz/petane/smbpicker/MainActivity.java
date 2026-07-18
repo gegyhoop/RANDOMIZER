@@ -37,13 +37,61 @@ public class MainActivity extends AppCompatActivity {
 
 
         Button pick = new Button(this);
-        pick.setText("NOVÉ DÍLY");
+pick.setText("NOVÉ DÍLY");
 
-        pick.setOnClickListener(v -> {
-            // výběr dílů přidáme později
+pick.setOnClickListener(v -> {
+
+    new Thread(() -> {
+
+        EpisodePicker picker =
+                new EpisodePicker(settings);
+
+        java.util.List<String> files =
+                picker.getRandomFiles();
+
+
+        runOnUiThread(() -> {
+
+            if (files.isEmpty()) {
+
+                android.widget.Toast.makeText(
+                        this,
+                        "Nenalezen žádný soubor",
+                        android.widget.Toast.LENGTH_LONG
+                ).show();
+
+            } else {
+
+                StringBuilder text =
+                        new StringBuilder();
+
+                text.append("Vybráno:\n\n");
+
+                for (String file : files) {
+                    text.append(file).append("\n");
+                }
+
+
+                android.app.AlertDialog.Builder dialog =
+                        new android.app.AlertDialog.Builder(this);
+
+                dialog.setTitle("Výběr");
+                dialog.setMessage(text.toString());
+                dialog.setPositiveButton(
+                        "OK",
+                        null
+                );
+
+                dialog.show();
+            }
+
         });
 
-        layout.addView(pick);
+    }).start();
+
+});
+
+layout.addView(pick);
 
 
         Button settingsButton = new Button(this);
