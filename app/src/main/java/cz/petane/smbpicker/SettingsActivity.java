@@ -75,13 +75,43 @@ public class SettingsActivity extends AppCompatActivity {
         Button test = new Button(this);
         test.setText("TEST PŘIPOJENÍ");
 
-        test.setOnClickListener(v ->
+        test.setOnClickListener(v -> {
+
+    saveSettings();
+
+    new Thread(() -> {
+
+        SmbManager smb =
+                new SmbManager(settings);
+
+        boolean result =
+                smb.testConnection();
+
+
+        runOnUiThread(() -> {
+
+            if (result) {
+
                 Toast.makeText(
                         this,
-                        "Test SMB bude doplněn",
-                        Toast.LENGTH_SHORT
-                ).show()
-        );
+                        "SMB připojení OK",
+                        Toast.LENGTH_LONG
+                ).show();
+
+            } else {
+
+                Toast.makeText(
+                        this,
+                        "SMB připojení selhalo",
+                        Toast.LENGTH_LONG
+                ).show();
+            }
+
+        });
+
+    }).start();
+
+});
 
         layout.addView(test);
 
