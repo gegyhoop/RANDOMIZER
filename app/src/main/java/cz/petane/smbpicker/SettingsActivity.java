@@ -24,6 +24,7 @@ public class SettingsActivity extends AppCompatActivity {
     private CheckBox anonymous;
 
     private SettingsManager settings;
+    private LinearLayout layout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,7 +32,7 @@ public class SettingsActivity extends AppCompatActivity {
 
         settings = new SettingsManager(this);
 
-        LinearLayout layout = new LinearLayout(this);
+        layout = new LinearLayout(this);
         layout.setOrientation(LinearLayout.VERTICAL);
         layout.setPadding(30, 30, 30, 30);
 
@@ -126,12 +127,21 @@ layout.addView(count);
 
     private EditText createField(String label, String value) {
 
-        EditText field = new EditText(this);
-        field.setHint(label);
-        field.setText(value);
+    TextView text = new TextView(this);
+    text.setText(label);
+    text.setTextSize(16);
 
-        return field;
-    }
+    layout.addView(text);
+
+
+    EditText field = new EditText(this);
+    field.setText(value);
+
+    layout.addView(field);
+
+
+    return field;
+}
 
 
     private void saveSettings() {
