@@ -33,9 +33,7 @@ public class SettingsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-
         settings = new SettingsManager(this);
-
 
         layout = new LinearLayout(this);
         layout.setOrientation(LinearLayout.VERTICAL);
@@ -49,20 +47,16 @@ public class SettingsActivity extends AppCompatActivity {
         layout.addView(title);
 
 
-
         server = createField(
                 "Server",
                 settings.getServer()
         );
 
 
-        share = createField(
-                "Sdílená složka",
-                settings.getShare()
+        source = createField(
+                "Zdrojová složka",
+                settings.getSource()
         );
-
-
-    
 
 
         target = createField(
@@ -77,13 +71,11 @@ public class SettingsActivity extends AppCompatActivity {
         );
 
 
-
         anonymous = new CheckBox(this);
         anonymous.setText("Anonymní přihlášení");
         anonymous.setChecked(settings.isAnonymous());
 
         layout.addView(anonymous);
-
 
 
         username = createField(
@@ -101,7 +93,6 @@ public class SettingsActivity extends AppCompatActivity {
                 InputType.TYPE_CLASS_TEXT |
                 InputType.TYPE_TEXT_VARIATION_PASSWORD
         );
-
 
 
         Button save = new Button(this);
@@ -131,16 +122,13 @@ public class SettingsActivity extends AppCompatActivity {
 
             saveSettings();
 
-
             new Thread(() -> {
 
                 SmbManager smb =
                         new SmbManager(settings);
 
-
                 boolean result =
                         smb.testConnection();
-
 
 
                 runOnUiThread(() -> {
@@ -168,12 +156,10 @@ public class SettingsActivity extends AppCompatActivity {
 
             }).start();
 
-
         });
 
 
         layout.addView(test);
-
 
 
         setContentView(layout);
@@ -191,13 +177,11 @@ public class SettingsActivity extends AppCompatActivity {
         layout.addView(text);
 
 
-
         EditText field = new EditText(this);
 
         field.setText(value);
 
         layout.addView(field);
-
 
 
         return field;
@@ -216,9 +200,11 @@ public class SettingsActivity extends AppCompatActivity {
                 source.getText().toString()
         );
 
+
         settings.setTarget(
                 target.getText().toString()
         );
+
 
         settings.setCount(
                 Integer.parseInt(
@@ -240,9 +226,5 @@ public class SettingsActivity extends AppCompatActivity {
         settings.setPassword(
                 password.getText().toString()
         );
-
-
-    
     }
-
 }
