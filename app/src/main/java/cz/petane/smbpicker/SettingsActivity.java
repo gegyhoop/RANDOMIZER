@@ -1,4 +1,4 @@
-package cz.petane.smbpicker;
+package cz.petane.randomfuturama;
 
 import android.os.Bundle;
 import android.text.InputType;
