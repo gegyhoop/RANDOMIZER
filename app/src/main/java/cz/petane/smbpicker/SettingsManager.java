@@ -21,20 +21,12 @@ public class SettingsManager {
         return prefs.getString("server", "192.168.0.1");
     }
 
-    public void setShare(String value) {
-        prefs.edit().putString("share", value).apply();
-    }
-
-    public String getShare() {
-        return prefs.getString("share", "usb1_1");
-    }
-
     public void setSource(String value) {
         prefs.edit().putString("source", value).apply();
     }
 
     public String getSource() {
-        return prefs.getString("source", "zzz/fut");
+        return prefs.getString("source", "usb1_1/zzz/fut");
     }
 
     public void setTarget(String value) {
@@ -42,7 +34,7 @@ public class SettingsManager {
     }
 
     public String getTarget() {
-        return prefs.getString("target", "moje");
+        return prefs.getString("target", "usb1_1/moje");
     }
 
     public void setCount(int value) {
