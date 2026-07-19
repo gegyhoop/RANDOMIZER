@@ -1,4 +1,4 @@
-package cz.petane.smbpicker;
+package cz.petane.randomfuturama;
 
 import java.util.ArrayList;
 import java.util.Collections;
