@@ -37,7 +37,6 @@ public class MainActivity extends AppCompatActivity {
 
 
         TextView title = new TextView(this);
-
         title.setText("SMB Random Picker");
         title.setTextSize(26);
 
@@ -46,16 +45,12 @@ public class MainActivity extends AppCompatActivity {
 
 
         Button pick = new Button(this);
-
         pick.setText("NOVÉ DÍLY");
-
 
 
         pick.setOnClickListener(v -> {
 
-
             new Thread(() -> {
-
 
                 EpisodePicker picker =
                         new EpisodePicker(settings);
@@ -65,19 +60,16 @@ public class MainActivity extends AppCompatActivity {
                         picker.getRandomFiles();
 
 
-
                 runOnUiThread(() -> {
 
 
                     if (files.isEmpty()) {
-
 
                         Toast.makeText(
                                 this,
                                 "Nenalezen žádný soubor",
                                 Toast.LENGTH_LONG
                         ).show();
-
 
                         return;
                     }
@@ -117,39 +109,45 @@ public class MainActivity extends AppCompatActivity {
                                         new Thread(() -> {
 
 
-                                            SmbFileMover mover =
-                                                    new SmbFileMover(settings);
+                                            try {
+
+
+                                                SmbFileMover mover =
+                                                        new SmbFileMover(settings);
 
 
 
-                                            boolean back =
-                                                    mover.moveAllBack();
+                                                boolean back =
+                                                        mover.moveAllBack();
 
 
 
-                                            boolean moved =
-                                                    false;
+                                                if (!back) {
+
+                                                    throw new Exception(
+                                                            "Nepodařilo se vrátit staré soubory"
+                                                    );
+
+                                                }
 
 
-                                            if (back) {
 
-                                                moved =
+                                                boolean moved =
                                                         mover.moveFiles(files);
 
-                                            }
+
+
+                                                if (!moved) {
+
+                                                    throw new Exception(
+                                                            "Nepodařilo se přesunout nové soubory"
+                                                    );
+
+                                                }
 
 
 
-                                            boolean result =
-                                                    back && moved;
-
-
-
-                                            runOnUiThread(() -> {
-
-
-                                                if (result) {
-
+                                                runOnUiThread(() -> {
 
                                                     Toast.makeText(
                                                             this,
@@ -157,20 +155,40 @@ public class MainActivity extends AppCompatActivity {
                                                             Toast.LENGTH_LONG
                                                     ).show();
 
-
-                                                } else {
-
-
-                                                    Toast.makeText(
-                                                            this,
-                                                            "Přenos se nezdařil",
-                                                            Toast.LENGTH_LONG
-                                                    ).show();
-
-                                                }
+                                                });
 
 
-                                            });
+
+                                            } catch (Exception e) {
+
+
+                                                runOnUiThread(() -> {
+
+
+                                                    new android.app.AlertDialog.Builder(this)
+
+                                                            .setTitle("Chyba přenosu")
+
+                                                            .setMessage(
+                                                                    e.getClass().getName()
+                                                                            + "\n\n"
+                                                                            + e.getMessage()
+                                                            )
+
+                                                            .setPositiveButton(
+                                                                    "OK",
+                                                                    null
+                                                            )
+
+                                                            .show();
+
+
+                                                });
+
+
+                                                e.printStackTrace();
+
+                                            }
 
 
                                         }).start();
@@ -186,11 +204,9 @@ public class MainActivity extends AppCompatActivity {
                 });
 
 
-
             }).start();
 
         });
-
 
 
         layout.addView(pick);
@@ -203,9 +219,7 @@ public class MainActivity extends AppCompatActivity {
         settingsButton.setText("NASTAVENÍ");
 
 
-
         settingsButton.setOnClickListener(v -> {
-
 
             Intent intent =
                     new Intent(
@@ -216,9 +230,7 @@ public class MainActivity extends AppCompatActivity {
 
             startActivity(intent);
 
-
         });
-
 
 
         layout.addView(settingsButton);
