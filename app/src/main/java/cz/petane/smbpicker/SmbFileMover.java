@@ -1,6 +1,7 @@
 package cz.petane.smbpicker;
 
 import jcifs.CIFSContext;
+import jcifs.CIFSException;
 import jcifs.config.PropertyConfiguration;
 import jcifs.context.BaseContext;
 import jcifs.smb.NtlmPasswordAuthenticator;
@@ -19,23 +20,31 @@ public class SmbFileMover {
 
         this.settings = settings;
 
-        Properties props = new Properties();
+        try {
 
-        props.setProperty(
-                "jcifs.smb.client.minVersion",
-                "SMB2"
-        );
+            Properties props = new Properties();
 
-        props.setProperty(
-                "jcifs.smb.client.maxVersion",
-                "SMB3"
-        );
+            props.setProperty(
+                    "jcifs.smb.client.minVersion",
+                    "SMB2"
+            );
+
+            props.setProperty(
+                    "jcifs.smb.client.maxVersion",
+                    "SMB3"
+            );
 
 
-        context =
-                new BaseContext(
-                        new PropertyConfiguration(props)
-                );
+            context =
+                    new BaseContext(
+                            new PropertyConfiguration(props)
+                    );
+
+
+        } catch (CIFSException e) {
+
+            throw new RuntimeException(e);
+        }
     }
 
 
@@ -88,7 +97,6 @@ public class SmbFileMover {
 
 
             from.renameTo(to);
-
 
             return true;
 
