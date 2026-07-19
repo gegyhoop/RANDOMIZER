@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -36,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         TextView title = new TextView(this);
+
         title.setText("SMB Random Picker");
         title.setTextSize(26);
 
@@ -44,10 +46,13 @@ public class MainActivity extends AppCompatActivity {
 
 
         Button pick = new Button(this);
+
         pick.setText("NOVÉ DÍLY");
 
 
+
         pick.setOnClickListener(v -> {
+
 
             new Thread(() -> {
 
@@ -67,10 +72,10 @@ public class MainActivity extends AppCompatActivity {
                     if (files.isEmpty()) {
 
 
-                        android.widget.Toast.makeText(
+                        Toast.makeText(
                                 this,
                                 "Nenalezen žádný soubor",
-                                android.widget.Toast.LENGTH_LONG
+                                Toast.LENGTH_LONG
                         ).show();
 
 
@@ -109,11 +114,66 @@ public class MainActivity extends AppCompatActivity {
                                     (dialog, which) -> {
 
 
-                                        android.widget.Toast.makeText(
-                                                this,
-                                                "Přesun připraven",
-                                                android.widget.Toast.LENGTH_SHORT
-                                        ).show();
+                                        new Thread(() -> {
+
+
+                                            SmbFileMover mover =
+                                                    new SmbFileMover(settings);
+
+
+
+                                            boolean back =
+                                                    mover.moveAllBack();
+
+
+
+                                            boolean moved =
+                                                    false;
+
+
+                                            if (back) {
+
+                                                moved =
+                                                        mover.moveFiles(files);
+
+                                            }
+
+
+
+                                            boolean result =
+                                                    back && moved;
+
+
+
+                                            runOnUiThread(() -> {
+
+
+                                                if (result) {
+
+
+                                                    Toast.makeText(
+                                                            this,
+                                                            "Hotovo",
+                                                            Toast.LENGTH_LONG
+                                                    ).show();
+
+
+                                                } else {
+
+
+                                                    Toast.makeText(
+                                                            this,
+                                                            "Přenos se nezdařil",
+                                                            Toast.LENGTH_LONG
+                                                    ).show();
+
+                                                }
+
+
+                                            });
+
+
+                                        }).start();
 
 
                                     }
@@ -132,6 +192,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
+
         layout.addView(pick);
 
 
@@ -142,7 +203,9 @@ public class MainActivity extends AppCompatActivity {
         settingsButton.setText("NASTAVENÍ");
 
 
+
         settingsButton.setOnClickListener(v -> {
+
 
             Intent intent =
                     new Intent(
@@ -153,7 +216,9 @@ public class MainActivity extends AppCompatActivity {
 
             startActivity(intent);
 
+
         });
+
 
 
         layout.addView(settingsButton);
