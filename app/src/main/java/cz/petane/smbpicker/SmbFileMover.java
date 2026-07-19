@@ -7,6 +7,7 @@ import jcifs.context.BaseContext;
 import jcifs.smb.NtlmPasswordAuthenticator;
 import jcifs.smb.SmbFile;
 
+import java.util.List;
 import java.util.Properties;
 
 
@@ -142,6 +143,45 @@ public class SmbFileMover {
                                 getContext()
                         )
                 );
+            }
+
+
+            return true;
+
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+
+            return false;
+        }
+    }
+
+
+
+    public boolean moveFiles(List<String> files) {
+
+        try {
+
+            for (String file : files) {
+
+
+                SmbFile from =
+                        new SmbFile(
+                                url(settings.getSource() + "/" + file),
+                                getContext()
+                        );
+
+
+                SmbFile to =
+                        new SmbFile(
+                                url(settings.getTarget() + "/" + file),
+                                getContext()
+                        );
+
+
+                from.renameTo(to);
+
             }
 
 
