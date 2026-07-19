@@ -1,13 +1,13 @@
 plugins {
-    id 'com.android.application'
+    id 'com.android.filmy'
 }
 
 android {
-    namespace 'cz.petane.Filmy'
+    namespace 'cz.petane.filmy'
     compileSdk 35
 
     defaultConfig {
-        applicationId "cz.petane.Film,"
+        applicationId "cz.petane.filmy"
         minSdk 26
         targetSdk 35
         versionCode 1
