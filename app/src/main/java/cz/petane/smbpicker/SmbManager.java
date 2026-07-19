@@ -1,4 +1,4 @@
-package cz.petane.smbpicker;
+package cz.petane.randomfuturama;
 
 import jcifs.CIFSContext;
 import jcifs.config.PropertyConfiguration;
