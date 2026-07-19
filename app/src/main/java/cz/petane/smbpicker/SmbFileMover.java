@@ -27,12 +27,12 @@ public class SmbFileMover {
 
             props.setProperty(
                     "jcifs.smb.client.minVersion",
-                    "SMB2"
+                    "SMB202"
             );
 
             props.setProperty(
                     "jcifs.smb.client.maxVersion",
-                    "SMB3"
+                    "SMB210"
             );
 
 
