@@ -3,11 +3,11 @@ plugins {
 }
 
 android {
-    namespace 'cz.petane.smbpicker'
+    namespace 'cz.petane.randomfuturama'
     compileSdk 35
 
     defaultConfig {
-        applicationId "cz.petane.smbpicker"
+        applicationId "cz.petane.randomfuturama"
         minSdk 26
         targetSdk 35
         versionCode 1
