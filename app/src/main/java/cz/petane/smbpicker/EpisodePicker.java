@@ -27,14 +27,12 @@ public class EpisodePicker {
 
             CIFSContext context = smbManager.getContext();
 
-            String path =
-                    "smb://" +
-                    settings.getServer() +
-                    "/" +
-                    settings.getShare() +
-                    "/" +
-                    settings.getSource() +
-                    "/";
+           String path =
+        "smb://" +
+        settings.getServer() +
+        "/" +
+        settings.getSource() +
+        "/";
 
 
             SmbFile folder =
