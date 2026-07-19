@@ -87,14 +87,12 @@ public CIFSContext getContext() throws Exception {
             }
 
 
-            String path =
-                    "smb://" +
-                    settings.getServer() +
-                    "/" +
-                    settings.getShare() +
-                    "/" +
-                    settings.getSource() +
-                    "/";
+    String path =
+        "smb://" +
+        settings.getServer() +
+        "/" +
+        settings.getSource() +
+        "/";
 
 
             SmbFile file = new SmbFile(path, base);
