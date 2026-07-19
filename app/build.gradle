@@ -3,11 +3,11 @@ plugins {
 }
 
 android {
-    namespace 'cz.petane.randomfuturama'
+    namespace 'cz.petane.Filmy'
     compileSdk 35
 
     defaultConfig {
-        applicationId "cz.petane.randomfuturama"
+        applicationId "cz.petane.Film,"
         minSdk 26
         targetSdk 35
         versionCode 1
