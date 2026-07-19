@@ -3,7 +3,7 @@
 <uses-permission android:name="android.permission.INTERNET" />
     <application
         android:theme="@style/AppTheme"
-        android:label="Random Futurama">
+        android:label="Filmy">
 
         <activity
             android:name=".SettingsActivity"
