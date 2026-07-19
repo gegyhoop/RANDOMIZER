@@ -1,4 +1,4 @@
-package cz.petane.randomfuturama;
+package cz.petane.Filmy;
 
 import java.util.ArrayList;
 import java.util.Collections;
