@@ -8,9 +8,13 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.util.List;
+
+
 public class MainActivity extends AppCompatActivity {
 
     private SettingsManager settings;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,11 +26,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+
     private void showMainScreen() {
 
         LinearLayout layout = new LinearLayout(this);
         layout.setOrientation(LinearLayout.VERTICAL);
         layout.setPadding(40, 40, 40, 40);
+
 
 
         TextView title = new TextView(this);
@@ -36,79 +42,122 @@ public class MainActivity extends AppCompatActivity {
         layout.addView(title);
 
 
+
         Button pick = new Button(this);
-pick.setText("NOVÉ DÍLY");
-
-pick.setOnClickListener(v -> {
-
-    new Thread(() -> {
-
-        EpisodePicker picker =
-                new EpisodePicker(settings);
-
-        java.util.List<String> files =
-                picker.getRandomFiles();
+        pick.setText("NOVÉ DÍLY");
 
 
-        runOnUiThread(() -> {
+        pick.setOnClickListener(v -> {
 
-            if (files.isEmpty()) {
-
-                android.widget.Toast.makeText(
-                        this,
-                        "Nenalezen žádný soubor",
-                        android.widget.Toast.LENGTH_LONG
-                ).show();
-
-            } else {
-
-                StringBuilder text =
-                        new StringBuilder();
-
-                text.append("Vybráno:\n\n");
-
-                for (String file : files) {
-                    text.append(file).append("\n");
-                }
+            new Thread(() -> {
 
 
-                android.app.AlertDialog.Builder dialog =
-                        new android.app.AlertDialog.Builder(this);
+                EpisodePicker picker =
+                        new EpisodePicker(settings);
 
-                dialog.setTitle("Výběr");
-                dialog.setMessage(text.toString());
-                dialog.setPositiveButton(
-                        "OK",
-                        null
-                );
 
-                dialog.show();
-            }
+                List<String> files =
+                        picker.getRandomFiles();
+
+
+
+                runOnUiThread(() -> {
+
+
+                    if (files.isEmpty()) {
+
+
+                        android.widget.Toast.makeText(
+                                this,
+                                "Nenalezen žádný soubor",
+                                android.widget.Toast.LENGTH_LONG
+                        ).show();
+
+
+                        return;
+                    }
+
+
+
+                    StringBuilder text =
+                            new StringBuilder();
+
+
+                    for (String file : files) {
+
+                        text.append(file)
+                                .append("\n");
+                    }
+
+
+
+                    new android.app.AlertDialog.Builder(this)
+
+                            .setTitle("Vybrané díly")
+
+                            .setMessage(text.toString())
+
+
+                            .setNegativeButton(
+                                    "ZRUŠIT",
+                                    null
+                            )
+
+
+                            .setPositiveButton(
+                                    "PROVEĎ",
+                                    (dialog, which) -> {
+
+
+                                        android.widget.Toast.makeText(
+                                                this,
+                                                "Přesun připraven",
+                                                android.widget.Toast.LENGTH_SHORT
+                                        ).show();
+
+
+                                    }
+                            )
+
+
+                            .show();
+
+
+                });
+
+
+
+            }).start();
 
         });
 
-    }).start();
 
-});
+        layout.addView(pick);
 
-layout.addView(pick);
+
 
 
         Button settingsButton = new Button(this);
+
         settingsButton.setText("NASTAVENÍ");
+
 
         settingsButton.setOnClickListener(v -> {
 
-            Intent intent = new Intent(
-                    MainActivity.this,
-                    SettingsActivity.class
-            );
+            Intent intent =
+                    new Intent(
+                            MainActivity.this,
+                            SettingsActivity.class
+                    );
+
 
             startActivity(intent);
 
         });
 
+
         layout.addView(settingsButton);
+
 
 
         setContentView(layout);
