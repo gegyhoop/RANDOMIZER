@@ -19,7 +19,6 @@ public class SettingsActivity extends AppCompatActivity {
     private LinearLayout layout;
 
     private EditText server;
-    private EditText share;
     private EditText source;
     private EditText target;
     private EditText count;
@@ -63,10 +62,7 @@ public class SettingsActivity extends AppCompatActivity {
         );
 
 
-        source = createField(
-                "Zdrojová složka",
-                settings.getSource()
-        );
+    
 
 
         target = createField(
@@ -215,9 +211,6 @@ public class SettingsActivity extends AppCompatActivity {
                 server.getText().toString()
         );
 
-        settings.setShare(
-                share.getText().toString()
-        );
 
         settings.setSource(
                 source.getText().toString()
