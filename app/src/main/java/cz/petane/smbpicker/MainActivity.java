@@ -1,4 +1,4 @@
-package cz.petane.Filmy;
+package cz.petane.filmy;
 
 import android.content.Intent;
 import android.os.Bundle;
