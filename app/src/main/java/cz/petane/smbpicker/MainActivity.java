@@ -34,7 +34,6 @@ public class MainActivity extends AppCompatActivity {
         List<Profile> profiles = profileManager.getAllProfiles();
 
         if (profiles.isEmpty()) {
-            // První spuštění - vytvořit výchozí profil
             Profile defaultProfile = new Profile();
             defaultProfile.setName("Výchozí seriál");
             profileManager.addProfile(defaultProfile);
@@ -46,7 +45,6 @@ public class MainActivity extends AppCompatActivity {
             mainLayout.addView(tile);
         }
 
-        // Tlačítko + na přidání nové dlaždice
         Button addButton = new Button(this);
         addButton.setText("+ Přidat nový seriál / složku");
         addButton.setOnClickListener(v -> addNewProfile());
@@ -59,11 +57,10 @@ public class MainActivity extends AppCompatActivity {
         LinearLayout tile = new LinearLayout(this);
         tile.setOrientation(LinearLayout.VERTICAL);
         tile.setPadding(24, 24, 24, 24);
-        tile.setBackgroundColor(0xFF333333); // tmavá dlaždice
+        tile.setBackgroundColor(0xFF333333);
         tile.setLayoutParams(new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, 
                 ViewGroup.LayoutParams.WRAP_CONTENT));
-        tile.setPadding(24, 24, 24, 24);
 
         TextView name = new TextView(this);
         name.setText(profile.getName());
@@ -93,9 +90,42 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void startPicking(Profile profile) {
-        // Zatím placeholder - později přesuneme logiku z EpisodePicker
-        Toast.makeText(this, "Vybrané díly pro: " + profile.getName(), Toast.LENGTH_SHORT).show();
-        // TODO: Spustit EpisodePicker s profile
+        new Thread(() -> {
+            EpisodePicker picker = new EpisodePicker(profile);
+            List<String> files = picker.getRandomFiles();
+
+            runOnUiThread(() -> {
+                if (files.isEmpty()) {
+                    Toast.makeText(this, "Nenalezen žádný soubor", Toast.LENGTH_LONG).show();
+                    return;
+                }
+
+                StringBuilder text = new StringBuilder();
+                for (String file : files) {
+                    text.append(file).append("\n");
+                }
+
+                new android.app.AlertDialog.Builder(this)
+                    .setTitle("Vybrané díly")
+                    .setMessage(text.toString())
+                    .setNegativeButton("ZRUŠIT", null)
+                    .setPositiveButton("PROVEĎ", (dialog, which) -> {
+                        new Thread(() -> {
+                            try {
+                                SmbFileMover mover = new SmbFileMover(profile);
+                                boolean moved = mover.moveFiles(files);
+                                runOnUiThread(() -> Toast.makeText(this, 
+                                    moved ? "Hotovo" : "Chyba přesunu", 
+                                    Toast.LENGTH_LONG).show());
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                                runOnUiThread(() -> Toast.makeText(this, "Chyba: " + e.getMessage(), Toast.LENGTH_LONG).show());
+                            }
+                        }).start();
+                    })
+                    .show();
+            });
+        }).start();
     }
 
     private void openSettings(Profile profile) {
@@ -110,7 +140,7 @@ public class MainActivity extends AppCompatActivity {
                 .setMessage("Opravdu smazat " + profile.getName() + "?")
                 .setPositiveButton("Ano", (d, w) -> {
                     profileManager.deleteProfile(profile.getId());
-                    showDashboard(); // refresh
+                    showDashboard();
                 })
                 .setNegativeButton("Ne", null)
                 .show();
@@ -126,6 +156,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        showDashboard(); // refresh po návratu z nastavení
+        showDashboard();
     }
 }
