@@ -17,6 +17,8 @@ android {
 
 dependencies {
     implementation 'androidx.appcompat:appcompat:1.6.1'
-
     implementation 'eu.agno3.jcifs:jcifs-ng:2.1.10'
+    
+    // Pro ukládání seznamu profilů
+    implementation 'com.google.code.gson:gson:2.10.1'
 }
