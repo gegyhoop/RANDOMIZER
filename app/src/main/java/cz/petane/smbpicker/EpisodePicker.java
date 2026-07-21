@@ -1,4 +1,4 @@
-package cz.petane.Filmy;
+package cz.petane.filmy;
 
 import java.util.ArrayList;
 import java.util.Collections;
