@@ -14,14 +14,26 @@ public class EpisodePicker {
 
     public List<String> getRandomFiles() {
         List<String> selected = new ArrayList<>();
-        try {
-            SmbManager smbManager = new SmbManager(profile); // budeme upravovat
-            // Zatím jednoduchá logika - vylepšíme později
-            // ... (původní logika načtení souborů z source složky)
 
-            // Placeholder
-            selected.add("test_dil_1.mkv");
-            selected.add("test_dil_2.mkv");
+        try {
+            SmbManager smbManager = new SmbManager(profile);
+            String path = "smb://" + profile.getServer() + "/" + profile.getSource() + "/";
+
+            SmbFile dir = new SmbFile(path, smbManager.getContext());
+            SmbFile[] files = dir.listFiles();
+
+            if (files == null || files.length == 0) {
+                return selected;
+            }
+
+            // Jednoduchý random výběr (pro test)
+            int count = Math.min(profile.getCount(), files.length);
+            // TODO: lepší random + filtrace (jen videa atd.)
+
+            for (int i = 0; i < count; i++) {
+                int randomIndex = (int) (Math.random() * files.length);
+                selected.add(files[randomIndex].getName());
+            }
 
         } catch (Exception e) {
             e.printStackTrace();
