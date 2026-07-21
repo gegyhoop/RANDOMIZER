@@ -9,7 +9,7 @@ import java.util.Properties;
 
 public class SmbManager {
 
-    private final Profile profile;   // změna z SettingsManager
+    private final Profile profile;
 
     public SmbManager(Profile profile) {
         this.profile = profile;
@@ -36,4 +36,12 @@ public class SmbManager {
 
     public boolean testConnection() {
         try {
-            String
+            String path = "smb://" + profile.getServer() + "/" + profile.getSource() + "/";
+            SmbFile file = new SmbFile(path, getContext());
+            return file.exists();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+}
