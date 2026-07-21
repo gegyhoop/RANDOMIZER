@@ -100,7 +100,9 @@ public class SettingsActivity extends AppCompatActivity {
 
         save.setOnClickListener(v -> {
 
-            saveSettings();
+            if (!saveSettings()) {
+                return;
+            }
 
             Toast.makeText(
                     this,
@@ -120,7 +122,9 @@ public class SettingsActivity extends AppCompatActivity {
 
         test.setOnClickListener(v -> {
 
-            saveSettings();
+            if (!saveSettings()) {
+                return;
+            }
 
             new Thread(() -> {
 
@@ -189,27 +193,42 @@ public class SettingsActivity extends AppCompatActivity {
 
 
 
-    private void saveSettings() {
+    private boolean saveSettings() {
+
+        String countValue = count.getText().toString().trim();
+        int fileCount;
+
+        try {
+            fileCount = Integer.parseInt(countValue);
+        } catch (NumberFormatException e) {
+            count.setError("Zadejte celé číslo větší než nula");
+            count.requestFocus();
+            return false;
+        }
+
+        if (fileCount <= 0) {
+            count.setError("Počet souborů musí být větší než nula");
+            count.requestFocus();
+            return false;
+        }
 
         settings.setServer(
-                server.getText().toString()
+                server.getText().toString().trim()
         );
 
 
         settings.setSource(
-                source.getText().toString()
+                source.getText().toString().trim()
         );
 
 
         settings.setTarget(
-                target.getText().toString()
+                target.getText().toString().trim()
         );
 
 
         settings.setCount(
-                Integer.parseInt(
-                        count.getText().toString()
-                )
+                fileCount
         );
 
 
@@ -219,12 +238,14 @@ public class SettingsActivity extends AppCompatActivity {
 
 
         settings.setUsername(
-                username.getText().toString()
+                username.getText().toString().trim()
         );
 
 
         settings.setPassword(
                 password.getText().toString()
         );
+
+        return true;
     }
 }

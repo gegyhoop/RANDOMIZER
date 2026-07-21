@@ -1,51 +1,19 @@
 package cz.petane.filmy;
 
 import jcifs.CIFSContext;
-import jcifs.CIFSException;
-import jcifs.config.PropertyConfiguration;
-import jcifs.context.BaseContext;
-import jcifs.smb.NtlmPasswordAuthenticator;
 import jcifs.smb.SmbFile;
 
 import java.util.List;
-import java.util.Properties;
 
 
 public class SmbFileMover {
 
     private final SettingsManager settings;
-    private final CIFSContext context;
 
 
     public SmbFileMover(SettingsManager settings) {
 
         this.settings = settings;
-
-        try {
-
-            Properties props = new Properties();
-
-            props.setProperty(
-                    "jcifs.smb.client.minVersion",
-                    "SMB202"
-            );
-
-            props.setProperty(
-                    "jcifs.smb.client.maxVersion",
-                    "SMB210"
-            );
-
-
-            context =
-                    new BaseContext(
-                            new PropertyConfiguration(props)
-                    );
-
-
-        } catch (CIFSException e) {
-
-            throw new RuntimeException(e);
-        }
     }
 
 
@@ -61,20 +29,8 @@ public class SmbFileMover {
 
 
 
-    private CIFSContext getContext() {
-
-        if (settings.isAnonymous()) {
-            return context;
-        }
-
-
-        return context.withCredentials(
-                new NtlmPasswordAuthenticator(
-                        "",
-                        settings.getUsername(),
-                        settings.getPassword()
-                )
-        );
+    private CIFSContext getContext() throws Exception {
+        return new SmbManager(settings).getContext();
     }
 
 
@@ -135,6 +91,10 @@ public class SmbFileMover {
 
 
             for (SmbFile file : files) {
+
+                if (file.isDirectory()) {
+                    continue;
+                }
 
                 file.renameTo(
                         new SmbFile(
