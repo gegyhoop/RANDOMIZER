@@ -1,4 +1,4 @@
-package cz.petane.filmy;
+package cz.petane.smbpicker;
 
 import android.os.Bundle;
 import android.text.InputType;
@@ -8,244 +8,105 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.appcompat.app.AppCompatActivity;
-
 
 public class SettingsActivity extends AppCompatActivity {
 
-    private SettingsManager settings;
+    private ProfileManager profileManager;
+    private Profile currentProfile;
 
-    private LinearLayout layout;
-
-    private EditText server;
-    private EditText source;
-    private EditText target;
-    private EditText count;
-
-    private EditText username;
-    private EditText password;
-
+    private EditText nameField, server, source, target, count;
+    private EditText username, password;
     private CheckBox anonymous;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        settings = new SettingsManager(this);
+        profileManager = new ProfileManager(this);
+        String profileId = getIntent().getStringExtra("profile_id");
+        currentProfile = profileManager.getProfileById(profileId);
 
-        layout = new LinearLayout(this);
+        if (currentProfile == null) {
+            finish();
+            return;
+        }
+
+        LinearLayout layout = new LinearLayout(this);
         layout.setOrientation(LinearLayout.VERTICAL);
         layout.setPadding(40, 40, 40, 40);
 
-
         TextView title = new TextView(this);
-        title.setText("Nastavení SMB");
+        title.setText("Nastavení: " + currentProfile.getName());
         title.setTextSize(24);
-
         layout.addView(title);
 
+        // Název dlaždice
+        nameField = createField("Název dlaždice", currentProfile.getName(), layout);
 
-        server = createField(
-                "Server",
-                settings.getServer()
-        );
-
-
-        source = createField(
-                "Zdrojová složka",
-                settings.getSource()
-        );
-
-
-        target = createField(
-                "Cílová složka",
-                settings.getTarget()
-        );
-
-
-        count = createField(
-                "Počet souborů",
-                String.valueOf(settings.getCount())
-        );
-
+        server = createField("Server", currentProfile.getServer(), layout);
+        source = createField("Zdrojová složka", currentProfile.getSource(), layout);
+        target = createField("Cílová složka", currentProfile.getTarget(), layout);
+        count = createField("Počet souborů", String.valueOf(currentProfile.getCount()), layout);
 
         anonymous = new CheckBox(this);
         anonymous.setText("Anonymní přihlášení");
-        anonymous.setChecked(settings.isAnonymous());
-
+        anonymous.setChecked(currentProfile.isAnonymous());
         layout.addView(anonymous);
 
-
-        username = createField(
-                "Uživatel",
-                settings.getUsername()
-        );
-
-
-        password = createField(
-                "Heslo",
-                settings.getPassword()
-        );
-
-        password.setInputType(
-                InputType.TYPE_CLASS_TEXT |
-                InputType.TYPE_TEXT_VARIATION_PASSWORD
-        );
-
+        username = createField("Uživatel", currentProfile.getUsername(), layout);
+        password = createField("Heslo", currentProfile.getPassword(), layout);
+        password.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
 
         Button save = new Button(this);
         save.setText("ULOŽIT");
-
-        save.setOnClickListener(v -> {
-
-            if (!saveSettings()) {
-                return;
-            }
-
-            Toast.makeText(
-                    this,
-                    "Uloženo",
-                    Toast.LENGTH_SHORT
-            ).show();
-
-        });
-
+        save.setOnClickListener(v -> saveSettings());
         layout.addView(save);
-
-
 
         Button test = new Button(this);
         test.setText("TEST PŘIPOJENÍ");
-
-
-        test.setOnClickListener(v -> {
-
-            if (!saveSettings()) {
-                return;
-            }
-
-            new Thread(() -> {
-
-                SmbManager smb =
-                        new SmbManager(settings);
-
-                boolean result =
-                        smb.testConnection();
-
-
-                runOnUiThread(() -> {
-
-                    if (result) {
-
-                        Toast.makeText(
-                                this,
-                                "SMB připojení OK",
-                                Toast.LENGTH_LONG
-                        ).show();
-
-                    } else {
-
-                        Toast.makeText(
-                                this,
-                                "SMB připojení selhalo",
-                                Toast.LENGTH_LONG
-                        ).show();
-
-                    }
-
-                });
-
-
-            }).start();
-
-        });
-
-
+        test.setOnClickListener(v -> testConnection());
         layout.addView(test);
-
 
         setContentView(layout);
     }
 
-
-
-    private EditText createField(String label, String value) {
-
-        TextView text = new TextView(this);
-
-        text.setText(label);
-        text.setTextSize(16);
-
-        layout.addView(text);
-
+    private EditText createField(String label, String value, LinearLayout layout) {
+        TextView tv = new TextView(this);
+        tv.setText(label);
+        tv.setTextSize(16);
+        layout.addView(tv);
 
         EditText field = new EditText(this);
-
         field.setText(value);
-
         layout.addView(field);
-
-
         return field;
     }
 
-
-
-    private boolean saveSettings() {
-
-        String countValue = count.getText().toString().trim();
-        int fileCount;
+    private void saveSettings() {
+        currentProfile.setName(nameField.getText().toString().trim());
+        currentProfile.setServer(server.getText().toString().trim());
+        currentProfile.setSource(source.getText().toString().trim());
+        currentProfile.setTarget(target.getText().toString().trim());
 
         try {
-            fileCount = Integer.parseInt(countValue);
-        } catch (NumberFormatException e) {
-            count.setError("Zadejte celé číslo větší než nula");
-            count.requestFocus();
-            return false;
+            currentProfile.setCount(Integer.parseInt(count.getText().toString().trim()));
+        } catch (Exception e) {
+            currentProfile.setCount(1);
         }
 
-        if (fileCount <= 0) {
-            count.setError("Počet souborů musí být větší než nula");
-            count.requestFocus();
-            return false;
-        }
+        currentProfile.setAnonymous(anonymous.isChecked());
+        currentProfile.setUsername(username.getText().toString().trim());
+        currentProfile.setPassword(password.getText().toString());
 
-        settings.setServer(
-                server.getText().toString().trim()
-        );
+        profileManager.updateProfile(currentProfile);
+        Toast.makeText(this, "Uloženo", Toast.LENGTH_SHORT).show();
+        finish();
+    }
 
-
-        settings.setSource(
-                source.getText().toString().trim()
-        );
-
-
-        settings.setTarget(
-                target.getText().toString().trim()
-        );
-
-
-        settings.setCount(
-                fileCount
-        );
-
-
-        settings.setAnonymous(
-                anonymous.isChecked()
-        );
-
-
-        settings.setUsername(
-                username.getText().toString().trim()
-        );
-
-
-        settings.setPassword(
-                password.getText().toString()
-        );
-
-        return true;
+    private void testConnection() {
+        saveSettings(); // uložit před testem
+        // TODO: Použít SmbManager s profile
+        Toast.makeText(this, "Test připojení (zatím placeholder)", Toast.LENGTH_LONG).show();
     }
 }
