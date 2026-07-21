@@ -1,4 +1,4 @@
-package cz.petane.Filmy;
+package cz.petane.filmy;
 
 import android.content.Context;
 import android.content.SharedPreferences;
