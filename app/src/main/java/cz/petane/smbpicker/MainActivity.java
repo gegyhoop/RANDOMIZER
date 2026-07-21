@@ -17,8 +17,14 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        profileManager = new ProfileManager(this);
-        showDashboard();
+        try {
+            profileManager = new ProfileManager(this);
+            showDashboard();
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(this, "Chyba při startu: " + e.getClass().getSimpleName() 
+                + "\n" + e.getMessage(), Toast.LENGTH_LONG).show();
+        }
     }
 
     private void showDashboard() {
@@ -52,6 +58,8 @@ public class MainActivity extends AppCompatActivity {
 
         setContentView(mainLayout);
     }
+
+    // ... zbytek metody zůstává stejný jako předtím (createProfileTile, startPicking, atd.)
 
     private LinearLayout createProfileTile(Profile profile) {
         LinearLayout tile = new LinearLayout(this);
