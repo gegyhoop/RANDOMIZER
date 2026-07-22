@@ -33,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -58,6 +59,7 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+
     @Override
     protected void onResume() {
 
@@ -69,7 +71,6 @@ public class MainActivity extends AppCompatActivity {
 
 
     }
-
 
 
 
@@ -125,7 +126,6 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-
         Button add =
                 new Button(this);
 
@@ -162,9 +162,7 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-
     private void loadProfiles() {
-
 
 
         profiles =
@@ -175,9 +173,7 @@ public class MainActivity extends AppCompatActivity {
         showProfiles();
 
 
-
     }
-
 
 
 
@@ -188,8 +184,6 @@ public class MainActivity extends AppCompatActivity {
     private void showProfiles() {
 
 
-
-        // smažeme staré karty
 
         while(layout.getChildCount() > 2) {
 
@@ -204,7 +198,6 @@ public class MainActivity extends AppCompatActivity {
 
 
         for(Profile profile : profiles) {
-
 
 
             ProfileCard card =
@@ -232,10 +225,7 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-
-
     private void openAddProfile() {
-
 
 
         Intent intent =
@@ -245,9 +235,7 @@ public class MainActivity extends AppCompatActivity {
                 );
 
 
-
         startActivity(intent);
-
 
 
     }
@@ -263,13 +251,11 @@ public class MainActivity extends AppCompatActivity {
     public void openSettings(Profile profile) {
 
 
-
         Intent intent =
                 new Intent(
                         this,
                         AddProfileActivity.class
                 );
-
 
 
         intent.putExtra(
@@ -278,9 +264,27 @@ public class MainActivity extends AppCompatActivity {
         );
 
 
-
         startActivity(intent);
 
+
+    }
+
+
+
+
+
+
+
+
+
+    public void openEpisodes(Profile profile) {
+
+
+        Toast.makeText(
+                this,
+                "Přesun dílů: " + profile.getName(),
+                Toast.LENGTH_SHORT
+        ).show();
 
 
     }
@@ -294,7 +298,6 @@ public class MainActivity extends AppCompatActivity {
 
 
     public void deleteProfile(Profile profile) {
-
 
 
         profileManager.deleteProfile(profile);
@@ -314,9 +317,6 @@ public class MainActivity extends AppCompatActivity {
 
 
     }
-
-
-
 
 
 
