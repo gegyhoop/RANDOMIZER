@@ -29,12 +29,15 @@ public class EpisodeActivity extends AppCompatActivity {
 
 
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState){
 
 
 
         super.onCreate(savedInstanceState);
+
 
 
 
@@ -46,14 +49,17 @@ public class EpisodeActivity extends AppCompatActivity {
 
 
 
+
         ProfileManager manager =
                 new ProfileManager(this);
 
 
 
 
+
         profile =
                 manager.getProfileById(name);
+
 
 
 
@@ -99,6 +105,7 @@ public class EpisodeActivity extends AppCompatActivity {
 
 
 
+
         TextView title =
                 new TextView(this);
 
@@ -123,6 +130,7 @@ public class EpisodeActivity extends AppCompatActivity {
 
 
 
+
         TextView info =
                 new TextView(this);
 
@@ -136,7 +144,7 @@ public class EpisodeActivity extends AppCompatActivity {
                 + "\n\nCíl:\n"
                 + profile.getTarget()
 
-                + "\n\nPočet:\n"
+                + "\n\nPočet dílů:\n"
                 + profile.getCount()
 
         );
@@ -144,6 +152,7 @@ public class EpisodeActivity extends AppCompatActivity {
 
 
         layout.addView(info);
+
 
 
 
@@ -192,6 +201,7 @@ public class EpisodeActivity extends AppCompatActivity {
 
 
 
+
         setContentView(layout);
 
 
@@ -220,6 +230,7 @@ public class EpisodeActivity extends AppCompatActivity {
 
 
 
+
             List<String> files =
                     picker.prepareEpisodes();
 
@@ -228,38 +239,45 @@ public class EpisodeActivity extends AppCompatActivity {
 
 
 
-            StringBuilder text =
-                    new StringBuilder();
+
+            if(files.size() == profile.getCount()){
 
 
 
-            text.append(
-                    "Nahrané díly:\n\n"
-            );
+                result.setText(
+                        "HOTOVO"
+                );
 
 
 
-
-            for(String file : files){
-
-
-
-                text.append(file)
-                        .append("\n");
+                Toast.makeText(
+                        this,
+                        "HOTOVO",
+                        Toast.LENGTH_SHORT
+                ).show();
 
 
 
             }
+            else {
 
 
 
+                result.setText(
+                        "SELHALO"
+                );
 
 
 
-            result.setText(
-                    text.toString()
-            );
+                Toast.makeText(
+                        this,
+                        "SELHALO",
+                        Toast.LENGTH_SHORT
+                ).show();
 
+
+
+            }
 
 
 
@@ -268,12 +286,18 @@ public class EpisodeActivity extends AppCompatActivity {
 
 
 
+            result.setText(
+                    "SELHALO"
+            );
+
+
+
             Toast.makeText(
                     this,
-                    "Chyba: "
-                    + e.getMessage(),
-                    Toast.LENGTH_LONG
+                    "SELHALO",
+                    Toast.LENGTH_SHORT
             ).show();
+
 
 
         }
