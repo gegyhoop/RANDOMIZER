@@ -1,8 +1,6 @@
 package cz.petane.smbpicker;
 
 
-import android.util.Log;
-
 import jcifs.CIFSContext;
 import jcifs.config.PropertyConfiguration;
 import jcifs.context.BaseContext;
@@ -15,8 +13,6 @@ import java.util.Properties;
 
 public class SmbManager {
 
-
-    private static final String TAG = "SmbManager";
 
 
     private final Profile profile;
@@ -38,46 +34,22 @@ public class SmbManager {
     public CIFSContext getContext() throws Exception {
 
 
+
         Properties props = new Properties();
 
 
 
-        // SMB2 zapnuto
+        // D-Link router podporuje SMB 2.0 - 2.1
         props.setProperty(
-                "jcifs.smb.client.enableSMB2",
-                "true"
-        );
-
-
-
-        // SMB1 zakázáno
-        props.setProperty(
-                "jcifs.smb.client.disableSMB1",
-                "true"
-        );
-
-
-
-        // Povolit guest přístup
-        props.setProperty(
-                "jcifs.smb.client.allowGuestFallback",
-                "true"
-        );
-
-
-
-        // Timeouty
-        props.setProperty(
-                "jcifs.smb.client.soTimeout",
-                "30000"
+                "jcifs.smb.client.minVersion",
+                "SMB202"
         );
 
 
         props.setProperty(
-                "jcifs.smb.client.responseTimeout",
-                "30000"
+                "jcifs.smb.client.maxVersion",
+                "SMB210"
         );
-
 
 
 
@@ -91,9 +63,9 @@ public class SmbManager {
 
 
 
-
-
-        if(!profile.isAnonymous()) {
+        // Pokud není anonymní přístup,
+        // použij přihlašovací údaje
+        if (!profile.isAnonymous()) {
 
 
             base =
@@ -107,8 +79,6 @@ public class SmbManager {
 
 
         }
-
-
 
 
 
@@ -141,38 +111,7 @@ public class SmbManager {
 
 
 
-            SmbFile target =
-                    new SmbFile(
-                            getPath(profile.getTarget()),
-                            getContext()
-                    );
-
-
-
-
-            boolean sourceExists =
-                    source.exists();
-
-
-
-            boolean targetExists =
-                    target.exists();
-
-
-
-            Log.d(
-                    TAG,
-                    "Source exists: "
-                            + sourceExists
-                            + " Target exists: "
-                            + targetExists
-            );
-
-
-
-            return sourceExists
-                    &&
-                    targetExists;
+            return source.exists();
 
 
 
@@ -180,11 +119,8 @@ public class SmbManager {
         catch(Exception e){
 
 
-            Log.e(
-                    TAG,
-                    "SMB connection failed",
-                    e
-            );
+
+            e.printStackTrace();
 
 
             return false;
@@ -267,22 +203,9 @@ public class SmbManager {
 
 
 
-
-            boolean sourceGone =
-                    !source.exists();
-
-
-
-            boolean targetExists =
-                    target.exists();
-
-
-
-
-
-            return sourceGone
+            return !source.exists()
                     &&
-                    targetExists;
+                    target.exists();
 
 
 
@@ -291,11 +214,7 @@ public class SmbManager {
 
 
 
-            Log.e(
-                    TAG,
-                    "Move failed",
-                    e
-            );
+            e.printStackTrace();
 
 
             return false;
@@ -383,12 +302,7 @@ public class SmbManager {
         catch(Exception e){
 
 
-
-            Log.e(
-                    TAG,
-                    "Move all failed",
-                    e
-            );
+            e.printStackTrace();
 
 
         }
@@ -434,8 +348,6 @@ public class SmbManager {
 
 
 
-
-
         if(folder.endsWith("/")){
 
 
@@ -443,7 +355,6 @@ public class SmbManager {
                     + profile.getServer()
                     + "/"
                     + folder;
-
 
 
         }
@@ -457,7 +368,6 @@ public class SmbManager {
                 + "/"
                 + folder
                 + "/";
-
 
 
     }
