@@ -277,7 +277,26 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-    public void openEpisodes(Profile profile) {
+   public void openEpisodes(Profile profile) {
+
+
+    Intent intent =
+            new Intent(
+                    this,
+                    EpisodeActivity.class
+            );
+
+
+    intent.putExtra(
+            "profileName",
+            profile.getName()
+    );
+
+
+    startActivity(intent);
+
+
+}
 
 
         Toast.makeText(
