@@ -93,6 +93,7 @@ public class AddProfileActivity extends AppCompatActivity {
                 username.setText("");
                 password.setText("");
             }
+
         });
 
 
@@ -132,15 +133,19 @@ public class AddProfileActivity extends AppCompatActivity {
         p.setSource(source.getText().toString());
         p.setTarget(target.getText().toString());
 
-        try{
+        try {
+
             p.setCount(
                     Integer.parseInt(
                             count.getText().toString()
                     )
             );
+
         }
         catch(Exception e){
+
             p.setCount(1);
+
         }
 
         return p;
@@ -149,47 +154,73 @@ public class AddProfileActivity extends AppCompatActivity {
 
     private void testConnection(){
 
-        try{
-
-            Profile testProfile = createProfileFromFields();
-
-            SmbManager smb =
-                    new SmbManager(testProfile);
-
-            boolean result =
-                    smb.testConnection();
+        Toast.makeText(
+                this,
+                "Testuji připojení...",
+                Toast.LENGTH_SHORT
+        ).show();
 
 
-            if(result){
+        new Thread(() -> {
 
-                Toast.makeText(
-                        this,
-                        "Připojení OK",
-                        Toast.LENGTH_LONG
-                ).show();
+
+            boolean result = false;
+
+
+            try {
+
+
+                Profile testProfile =
+                        createProfileFromFields();
+
+
+                SmbManager smb =
+                        new SmbManager(testProfile);
+
+
+                result =
+                        smb.testConnection();
+
 
             }
-            else{
+            catch(Exception e){
 
-                Toast.makeText(
-                        this,
-                        "Připojení selhalo",
-                        Toast.LENGTH_LONG
-                ).show();
+                e.printStackTrace();
 
             }
 
-        }
-        catch(Exception e){
 
-            Toast.makeText(
-                    this,
-                    "Chyba: " + e.getMessage(),
-                    Toast.LENGTH_LONG
-            ).show();
+            boolean finalResult = result;
 
-            e.printStackTrace();
-        }
+
+            runOnUiThread(() -> {
+
+
+                if(finalResult){
+
+                    Toast.makeText(
+                            this,
+                            "Připojení OK",
+                            Toast.LENGTH_LONG
+                    ).show();
+
+                }
+                else {
+
+                    Toast.makeText(
+                            this,
+                            "Připojení selhalo",
+                            Toast.LENGTH_LONG
+                    ).show();
+
+                }
+
+
+            });
+
+
+        }).start();
+
     }
 
 
@@ -230,16 +261,21 @@ public class AddProfileActivity extends AppCompatActivity {
                         editingProfile.getCount()
                 )
         );
+
     }
 
 
     private void saveProfile(){
 
-        if(editingProfile == null)
+        if(editingProfile == null){
+
             editingProfile = new Profile();
 
+        }
 
-        Profile p = createProfileFromFields();
+
+        Profile p =
+                createProfileFromFields();
 
 
         editingProfile.setName(p.getName());
@@ -252,9 +288,13 @@ public class AddProfileActivity extends AppCompatActivity {
         editingProfile.setCount(p.getCount());
 
 
-        profileManager.updateProfile(editingProfile);
+        profileManager.updateProfile(
+                editingProfile
+        );
 
 
         finish();
+
     }
+
 }
