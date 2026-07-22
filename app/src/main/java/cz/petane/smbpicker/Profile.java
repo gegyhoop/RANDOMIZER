@@ -18,8 +18,7 @@ public class Profile {
 
     private boolean anonymous;
 
-
-    private int filesToMove = 1;
+    private int count = 1;
 
 
 
@@ -30,121 +29,89 @@ public class Profile {
 
 
     public String getName() {
-
         return name;
-
     }
 
 
     public void setName(String name) {
-
         this.name = name;
-
     }
 
 
 
     public String getServer() {
-
         return server;
-
     }
 
 
     public void setServer(String server) {
-
         this.server = server;
-
     }
 
 
 
     public String getUsername() {
-
         return username;
-
     }
 
 
     public void setUsername(String username) {
-
         this.username = username;
-
     }
 
 
 
     public String getPassword() {
-
         return password;
-
     }
 
 
     public void setPassword(String password) {
-
         this.password = password;
-
     }
 
 
 
     public String getSource() {
-
         return source;
-
     }
 
 
     public void setSource(String source) {
-
         this.source = source;
-
     }
 
 
 
     public String getTarget() {
-
         return target;
-
     }
 
 
     public void setTarget(String target) {
-
         this.target = target;
-
     }
 
 
 
     public boolean isAnonymous() {
-
         return anonymous;
-
     }
 
 
     public void setAnonymous(boolean anonymous) {
-
         this.anonymous = anonymous;
-
     }
 
 
 
-    public int getFilesToMove() {
-
-        return filesToMove;
-
+    public int getCount() {
+        return count;
     }
 
 
-    public void setFilesToMove(int filesToMove) {
-
-        this.filesToMove = filesToMove;
-
+    public void setCount(int count) {
+        this.count = count;
     }
 
 }
