@@ -6,6 +6,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -38,6 +39,9 @@ public class AddProfileActivity extends AppCompatActivity {
 
 
 
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -51,9 +55,7 @@ public class AddProfileActivity extends AppCompatActivity {
 
 
 
-
         createLayout();
-
 
 
 
@@ -88,6 +90,7 @@ public class AddProfileActivity extends AppCompatActivity {
 
 
         layout.addView(label);
+
 
 
 
@@ -144,6 +147,7 @@ public class AddProfileActivity extends AppCompatActivity {
 
 
 
+
         TextView title =
                 new TextView(this);
 
@@ -166,11 +170,14 @@ public class AddProfileActivity extends AppCompatActivity {
 
 
 
+
+
         name =
                 addField(
                         layout,
                         "Název"
                 );
+
 
 
 
@@ -184,11 +191,13 @@ public class AddProfileActivity extends AppCompatActivity {
 
 
 
+
         source =
                 addField(
                         layout,
                         "Zdrojová složka"
                 );
+
 
 
 
@@ -202,6 +211,7 @@ public class AddProfileActivity extends AppCompatActivity {
 
 
 
+
         count =
                 addField(
                         layout,
@@ -211,6 +221,35 @@ public class AddProfileActivity extends AppCompatActivity {
 
 
         count.setText("1");
+
+
+
+
+
+
+
+
+
+        Button test =
+                new Button(this);
+
+
+
+        test.setText(
+                "Test SMB připojení"
+        );
+
+
+
+        test.setOnClickListener(
+                v -> testConnection()
+        );
+
+
+
+        layout.addView(test);
+
+
 
 
 
@@ -236,6 +275,7 @@ public class AddProfileActivity extends AppCompatActivity {
 
 
         layout.addView(save);
+
 
 
 
@@ -284,6 +324,8 @@ public class AddProfileActivity extends AppCompatActivity {
 
 
 
+
+
         if(editingProfile.getName() != null){
 
 
@@ -319,6 +361,86 @@ public class AddProfileActivity extends AppCompatActivity {
             );
 
 
+        }
+
+
+
+    }
+
+
+
+
+
+
+
+
+
+    private void testConnection(){
+
+
+
+        Profile testProfile =
+                new Profile();
+
+
+
+        testProfile.setName(
+                name.getText().toString()
+        );
+
+
+
+        testProfile.setServer(
+                server.getText().toString()
+        );
+
+
+
+        testProfile.setSource(
+                source.getText().toString()
+        );
+
+
+
+        testProfile.setTarget(
+                target.getText().toString()
+        );
+
+
+
+        SmbManager smb =
+                new SmbManager(testProfile);
+
+
+
+
+        boolean result =
+                smb.testConnection();
+
+
+
+
+
+        if(result){
+
+
+            Toast.makeText(
+                    this,
+                    "Připojení OK",
+                    Toast.LENGTH_LONG
+            ).show();
+
+
+        }
+        else {
+
+
+            Toast.makeText(
+                    this,
+                    "Připojení selhalo",
+                    Toast.LENGTH_LONG
+            ).show();
+
 
         }
 
@@ -348,6 +470,7 @@ public class AddProfileActivity extends AppCompatActivity {
 
 
         }
+
 
 
 
@@ -393,7 +516,8 @@ public class AddProfileActivity extends AppCompatActivity {
 
 
 
-        } catch(Exception e){
+        }
+        catch(Exception e){
 
 
 
