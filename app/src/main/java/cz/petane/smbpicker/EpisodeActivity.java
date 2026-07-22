@@ -11,7 +11,6 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -23,15 +22,7 @@ public class EpisodeActivity extends AppCompatActivity {
     private Profile profile;
 
 
-    private LinearLayout layout;
-
-
     private TextView result;
-
-
-
-    private ArrayList<String> selectedFiles;
-
 
 
 
@@ -39,10 +30,12 @@ public class EpisodeActivity extends AppCompatActivity {
 
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState){
+
 
 
         super.onCreate(savedInstanceState);
+
 
 
 
@@ -52,18 +45,16 @@ public class EpisodeActivity extends AppCompatActivity {
 
 
 
+
         ProfileManager manager =
                 new ProfileManager(this);
+
 
 
 
         profile =
                 manager.getProfileById(name);
 
-
-
-        selectedFiles =
-                new ArrayList<>();
 
 
 
@@ -85,7 +76,7 @@ public class EpisodeActivity extends AppCompatActivity {
 
 
 
-        layout =
+        LinearLayout layout =
                 new LinearLayout(this);
 
 
@@ -108,15 +99,14 @@ public class EpisodeActivity extends AppCompatActivity {
 
 
 
-
         TextView title =
                 new TextView(this);
 
 
 
         title.setText(
-                "Nové díly - "
-                        + profile.getName()
+                "Aktualizovat díly - "
+                + profile.getName()
         );
 
 
@@ -133,7 +123,6 @@ public class EpisodeActivity extends AppCompatActivity {
 
 
 
-
         TextView info =
                 new TextView(this);
 
@@ -141,17 +130,14 @@ public class EpisodeActivity extends AppCompatActivity {
 
         info.setText(
 
-                "Server:\n"
-                        + profile.getServer()
+                "Zdroj:\n"
+                + profile.getSource()
 
-                        + "\n\nZdroj:\n"
-                        + profile.getSource()
+                + "\n\nCíl:\n"
+                + profile.getTarget()
 
-                        + "\n\nCíl:\n"
-                        + profile.getTarget()
-
-                        + "\n\nPočet souborů:\n"
-                        + profile.getCount()
+                + "\n\nPočet:\n"
+                + profile.getCount()
 
         );
 
@@ -165,50 +151,24 @@ public class EpisodeActivity extends AppCompatActivity {
 
 
 
-
-        Button find =
+        Button run =
                 new Button(this);
 
 
 
-        find.setText(
-                "Najít nové díly"
+        run.setText(
+                "Aktualizovat díly"
         );
 
 
 
-        find.setOnClickListener(
-                v -> findEpisodes()
+        run.setOnClickListener(
+                v -> updateEpisodes()
         );
 
 
 
-        layout.addView(find);
-
-
-
-
-
-
-
-        Button move =
-                new Button(this);
-
-
-
-        move.setText(
-                "Přesunout vybrané"
-        );
-
-
-
-        move.setOnClickListener(
-                v -> moveEpisodes()
-        );
-
-
-
-        layout.addView(move);
+        layout.addView(run);
 
 
 
@@ -232,7 +192,6 @@ public class EpisodeActivity extends AppCompatActivity {
 
 
 
-
         setContentView(layout);
 
 
@@ -247,11 +206,7 @@ public class EpisodeActivity extends AppCompatActivity {
 
 
 
-    private void findEpisodes(){
-
-
-
-        selectedFiles.clear();
+    private void updateEpisodes(){
 
 
 
@@ -264,31 +219,9 @@ public class EpisodeActivity extends AppCompatActivity {
 
 
 
+
             List<String> files =
-                    picker.getRandomFiles();
-
-
-
-
-            selectedFiles.addAll(files);
-
-
-
-
-            if(selectedFiles.isEmpty()) {
-
-
-
-                result.setText(
-                        "Nenalezeny žádné soubory"
-                );
-
-
-                return;
-
-
-            }
-
+                    picker.prepareEpisodes();
 
 
 
@@ -301,23 +234,23 @@ public class EpisodeActivity extends AppCompatActivity {
 
 
             text.append(
-                    "Vybrané soubory:\n\n"
+                    "Nahrané díly:\n\n"
             );
 
 
 
 
-            for(String file : selectedFiles){
+            for(String file : files){
 
 
 
-                text.append(file);
-
-                text.append("\n");
+                text.append(file)
+                        .append("\n");
 
 
 
             }
+
 
 
 
@@ -329,6 +262,7 @@ public class EpisodeActivity extends AppCompatActivity {
 
 
 
+
         }
         catch(Exception e){
 
@@ -336,104 +270,13 @@ public class EpisodeActivity extends AppCompatActivity {
 
             Toast.makeText(
                     this,
-                    "Chyba: " + e.getMessage(),
+                    "Chyba: "
+                    + e.getMessage(),
                     Toast.LENGTH_LONG
             ).show();
 
 
-
         }
-
-
-
-    }
-
-
-
-
-
-
-
-
-
-    private void moveEpisodes(){
-
-
-
-        if(selectedFiles.isEmpty()) {
-
-
-
-            Toast.makeText(
-                    this,
-                    "Nejdříve vyber soubory",
-                    Toast.LENGTH_SHORT
-            ).show();
-
-
-
-            return;
-
-
-        }
-
-
-
-
-
-
-
-        SmbManager smb =
-                new SmbManager(profile);
-
-
-
-
-        int success = 0;
-
-
-
-
-        for(String file : selectedFiles){
-
-
-
-            if(smb.moveFile(file)){
-
-
-                success++;
-
-
-            }
-
-
-        }
-
-
-
-
-
-
-        Toast.makeText(
-                this,
-                "Přesunuto: "
-                        + success
-                        + "/"
-                        + selectedFiles.size(),
-                Toast.LENGTH_LONG
-        ).show();
-
-
-
-
-
-        selectedFiles.clear();
-
-
-
-        result.setText(
-                "Hotovo"
-        );
 
 
 
