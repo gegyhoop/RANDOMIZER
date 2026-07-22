@@ -11,6 +11,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -26,6 +27,12 @@ public class EpisodeActivity extends AppCompatActivity {
 
 
     private TextView result;
+
+
+
+    private ArrayList<String> selectedFiles;
+
+
 
 
 
@@ -52,6 +59,11 @@ public class EpisodeActivity extends AppCompatActivity {
 
         profile =
                 manager.getProfileById(name);
+
+
+
+        selectedFiles =
+                new ArrayList<>();
 
 
 
@@ -96,6 +108,7 @@ public class EpisodeActivity extends AppCompatActivity {
 
 
 
+
         TextView title =
                 new TextView(this);
 
@@ -120,6 +133,7 @@ public class EpisodeActivity extends AppCompatActivity {
 
 
 
+
         TextView info =
                 new TextView(this);
 
@@ -136,7 +150,7 @@ public class EpisodeActivity extends AppCompatActivity {
                         + "\n\nCíl:\n"
                         + profile.getTarget()
 
-                        + "\n\nPočet:\n"
+                        + "\n\nPočet souborů:\n"
                         + profile.getCount()
 
         );
@@ -152,24 +166,49 @@ public class EpisodeActivity extends AppCompatActivity {
 
 
 
-        Button run =
+        Button find =
                 new Button(this);
 
 
 
-        run.setText(
+        find.setText(
                 "Najít nové díly"
         );
 
 
 
-        run.setOnClickListener(
-                v -> runPicker()
+        find.setOnClickListener(
+                v -> findEpisodes()
         );
 
 
 
-        layout.addView(run);
+        layout.addView(find);
+
+
+
+
+
+
+
+        Button move =
+                new Button(this);
+
+
+
+        move.setText(
+                "Přesunout vybrané"
+        );
+
+
+
+        move.setOnClickListener(
+                v -> moveEpisodes()
+        );
+
+
+
+        layout.addView(move);
 
 
 
@@ -208,11 +247,16 @@ public class EpisodeActivity extends AppCompatActivity {
 
 
 
-    private void runPicker(){
+    private void findEpisodes(){
+
+
+
+        selectedFiles.clear();
 
 
 
         try {
+
 
 
             EpisodePicker picker =
@@ -226,7 +270,13 @@ public class EpisodeActivity extends AppCompatActivity {
 
 
 
-            if(files.isEmpty()) {
+            selectedFiles.addAll(files);
+
+
+
+
+            if(selectedFiles.isEmpty()) {
+
 
 
                 result.setText(
@@ -238,6 +288,7 @@ public class EpisodeActivity extends AppCompatActivity {
 
 
             }
+
 
 
 
@@ -256,20 +307,18 @@ public class EpisodeActivity extends AppCompatActivity {
 
 
 
-            for(String file : files) {
+            for(String file : selectedFiles){
 
 
-                text.append(
-                        file
-                );
 
+                text.append(file);
 
-                text.append(
-                        "\n"
-                );
+                text.append("\n");
+
 
 
             }
+
 
 
 
@@ -294,6 +343,98 @@ public class EpisodeActivity extends AppCompatActivity {
 
 
         }
+
+
+
+    }
+
+
+
+
+
+
+
+
+
+    private void moveEpisodes(){
+
+
+
+        if(selectedFiles.isEmpty()) {
+
+
+
+            Toast.makeText(
+                    this,
+                    "Nejdříve vyber soubory",
+                    Toast.LENGTH_SHORT
+            ).show();
+
+
+
+            return;
+
+
+        }
+
+
+
+
+
+
+
+        SmbManager smb =
+                new SmbManager(profile);
+
+
+
+
+        int success = 0;
+
+
+
+
+        for(String file : selectedFiles){
+
+
+
+            if(smb.moveFile(file)){
+
+
+                success++;
+
+
+            }
+
+
+        }
+
+
+
+
+
+
+        Toast.makeText(
+                this,
+                "Přesunuto: "
+                        + success
+                        + "/"
+                        + selectedFiles.size(),
+                Toast.LENGTH_LONG
+        ).show();
+
+
+
+
+
+        selectedFiles.clear();
+
+
+
+        result.setText(
+                "Hotovo"
+        );
+
 
 
     }
