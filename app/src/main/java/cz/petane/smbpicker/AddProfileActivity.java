@@ -10,18 +10,15 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
 
-import java.util.ArrayList;
-
-
 
 public class AddProfileActivity extends AppCompatActivity {
 
 
-    private EditText name;
-    private EditText server;
-    private EditText source;
-    private EditText target;
-    private EditText count;
+    EditText name;
+    EditText server;
+    EditText source;
+    EditText target;
+    EditText count;
 
 
 
@@ -30,7 +27,6 @@ public class AddProfileActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
 
-
         createLayout();
 
     }
@@ -38,34 +34,31 @@ public class AddProfileActivity extends AppCompatActivity {
 
 
 
-
-    private EditText createField(
-            String hint,
-            LinearLayout layout
-    ) {
-
+    private EditText addField(
+            LinearLayout layout,
+            String text
+    ){
 
         TextView label =
                 new TextView(this);
 
-        label.setText(hint);
-
+        label.setText(text);
 
         layout.addView(label);
 
 
 
-        EditText edit =
+        EditText field =
                 new EditText(this);
 
 
-        edit.setHint(hint);
+        field.setHint(text);
 
 
-        layout.addView(edit);
+        layout.addView(field);
 
 
-        return edit;
+        return field;
 
     }
 
@@ -73,8 +66,7 @@ public class AddProfileActivity extends AppCompatActivity {
 
 
 
-
-    private void createLayout() {
+    private void createLayout(){
 
 
         LinearLayout layout =
@@ -113,45 +105,42 @@ public class AddProfileActivity extends AppCompatActivity {
 
 
         name =
-                createField(
-                        "Název seriálu",
-                        layout
+                addField(
+                        layout,
+                        "Název"
                 );
-
 
 
         server =
-                createField(
-                        "SMB server",
-                        layout
+                addField(
+                        layout,
+                        "SMB server"
                 );
-
 
 
         source =
-                createField(
-                        "Zdrojová složka",
-                        layout
+                addField(
+                        layout,
+                        "Zdrojová složka"
                 );
-
 
 
         target =
-                createField(
-                        "Cílová složka",
-                        layout
+                addField(
+                        layout,
+                        "Cílová složka"
                 );
 
 
-
         count =
-                createField(
-                        "Počet dílů",
-                        layout
+                addField(
+                        layout,
+                        "Počet souborů"
                 );
 
 
         count.setText("1");
+
 
 
 
@@ -166,7 +155,7 @@ public class AddProfileActivity extends AppCompatActivity {
 
 
         save.setOnClickListener(
-                v -> saveProfile()
+                v -> save()
         );
 
 
@@ -183,7 +172,8 @@ public class AddProfileActivity extends AppCompatActivity {
 
 
 
-    private void saveProfile() {
+
+    private void save(){
 
 
         Profile profile =
@@ -214,6 +204,7 @@ public class AddProfileActivity extends AppCompatActivity {
 
         try {
 
+
             profile.setCount(
                     Integer.parseInt(
                             count.getText().toString()
@@ -221,7 +212,8 @@ public class AddProfileActivity extends AppCompatActivity {
             );
 
 
-        } catch(Exception e) {
+        } catch(Exception e){
+
 
             profile.setCount(1);
 
@@ -229,10 +221,8 @@ public class AddProfileActivity extends AppCompatActivity {
 
 
 
-
         ProfileManager manager =
                 new ProfileManager(this);
-
 
 
         manager.updateProfile(profile);
