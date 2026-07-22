@@ -129,10 +129,6 @@ public class SmbManager {
 
 
 
-            e.printStackTrace();
-
-
-
             return false;
 
 
@@ -206,20 +202,39 @@ public class SmbManager {
 
 
 
+
+
             source.renameTo(target);
 
 
 
-            return true;
+
+
+
+
+            // kontrola výsledku přesunu
+
+
+            boolean sourceGone =
+                    !source.exists();
+
+
+
+            boolean targetExists =
+                    target.exists();
+
+
+
+
+
+            return sourceGone
+                    &&
+                    targetExists;
 
 
 
         }
         catch(Exception e){
-
-
-
-            e.printStackTrace();
 
 
 
@@ -309,9 +324,6 @@ public class SmbManager {
 
 
 
-            e.printStackTrace();
-
-
         }
 
 
@@ -342,8 +354,6 @@ public class SmbManager {
 
 
 
-        // odstranění počátečních lomítek
-
         while(folder.startsWith("/")){
 
 
@@ -352,6 +362,8 @@ public class SmbManager {
 
 
         }
+
+
 
 
 
@@ -368,6 +380,7 @@ public class SmbManager {
 
 
         }
+
 
 
 
