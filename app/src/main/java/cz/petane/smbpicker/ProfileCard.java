@@ -1,7 +1,8 @@
 package cz.petane.smbpicker;
 
 
-import android.content.Context;
+import android.graphics.Color;
+import android.view.Gravity;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -18,8 +19,10 @@ public class ProfileCard extends LinearLayout {
 
 
 
+
+
     public ProfileCard(
-            Context context,
+            android.content.Context context,
             Profile profile,
             MainActivity activity
     ) {
@@ -44,6 +47,7 @@ public class ProfileCard extends LinearLayout {
 
 
 
+
     private void create() {
 
 
@@ -57,6 +61,26 @@ public class ProfileCard extends LinearLayout {
                 20,
                 20,
                 20
+        );
+
+
+        setBackgroundColor(
+                Color.LTGRAY
+        );
+
+
+
+        LinearLayout header =
+                new LinearLayout(getContext());
+
+
+        header.setOrientation(
+                HORIZONTAL
+        );
+
+
+        header.setGravity(
+                Gravity.CENTER_VERTICAL
         );
 
 
@@ -77,23 +101,89 @@ public class ProfileCard extends LinearLayout {
 
 
 
-        addView(title);
+        header.addView(
+                title,
+                new LayoutParams(
+                        0,
+                        LayoutParams.WRAP_CONTENT,
+                        1
+                )
+        );
 
 
 
 
 
-
-        Button newEpisodes =
+        Button delete =
                 new Button(getContext());
 
 
-        newEpisodes.setText(
+
+        delete.setText(
+                "X"
+        );
+
+
+
+        delete.setOnClickListener(
+                v -> activity.deleteProfile(profile)
+        );
+
+
+
+        header.addView(delete);
+
+
+
+
+        addView(header);
+
+
+
+
+
+
+
+
+        LinearLayout buttons =
+                new LinearLayout(getContext());
+
+
+
+        buttons.setOrientation(
+                HORIZONTAL
+        );
+
+
+
+
+
+        Button episodes =
+                new Button(getContext());
+
+
+
+        episodes.setText(
                 "Nové díly"
         );
 
 
-        addView(newEpisodes);
+
+        episodes.setOnClickListener(
+                v -> activity.openEpisodes(profile)
+        );
+
+
+
+
+        buttons.addView(
+                episodes,
+                new LayoutParams(
+                        0,
+                        LayoutParams.WRAP_CONTENT,
+                        1
+                )
+        );
 
 
 
@@ -111,33 +201,27 @@ public class ProfileCard extends LinearLayout {
         );
 
 
+
         settings.setOnClickListener(
                 v -> activity.openSettings(profile)
         );
 
 
-        addView(settings);
 
-
-
-
-
-
-        Button delete =
-                new Button(getContext());
-
-
-        delete.setText(
-                "X"
+        buttons.addView(
+                settings,
+                new LayoutParams(
+                        0,
+                        LayoutParams.WRAP_CONTENT,
+                        1
+                )
         );
 
 
-        delete.setOnClickListener(
-                v -> activity.deleteProfile(profile)
-        );
 
 
-        addView(delete);
+
+        addView(buttons);
 
 
 
