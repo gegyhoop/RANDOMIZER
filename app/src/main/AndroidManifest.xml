@@ -2,25 +2,33 @@
 
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
+
     <uses-permission android:name="android.permission.INTERNET" />
 
 
     <application
+
         android:theme="@style/AppTheme"
+
         android:label="SMB Random Picker"
+
         android:allowBackup="true">
+
+
+        <activity
+            android:name=".AddProfileActivity"
+            android:exported="false" />
+
 
         <activity
             android:name=".SettingsActivity"
             android:exported="false" />
 
-        <activity
-            android:name=".AddProfileActivity"
-            android:exported="false"/>
-        
+
         <activity
             android:name=".MainActivity"
             android:exported="true">
+
 
             <intent-filter>
 
@@ -30,9 +38,11 @@
 
             </intent-filter>
 
+
         </activity>
 
 
     </application>
+
 
 </manifest>
