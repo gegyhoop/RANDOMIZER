@@ -14,104 +14,64 @@ import java.util.Properties;
 public class SmbManager {
 
 
-
     private final Profile profile;
 
+    private final CIFSContext context;
 
 
-    public SmbManager(Profile profile) {
+
+    public SmbManager(Profile profile){
+
 
         this.profile = profile;
-
-    }
-
-
-
-
-
-
-
-    public CIFSContext getContext() throws Exception {
-
-
-
-        Properties props = new Properties();
-
-
-
-        // D-Link router podporuje SMB 2.0 - 2.1
-        props.setProperty(
-                "jcifs.smb.client.minVersion",
-                "SMB202"
-        );
-
-
-        props.setProperty(
-                "jcifs.smb.client.maxVersion",
-                "SMB210"
-        );
-
-
-
-
-        CIFSContext base =
-                new BaseContext(
-                        new PropertyConfiguration(props)
-                );
-
-
-
-
-
-        // Pokud není anonymní přístup,
-        // použij přihlašovací údaje
-        if (!profile.isAnonymous()) {
-
-
-            base =
-                    base.withCredentials(
-                            new NtlmPasswordAuthenticator(
-                                    "",
-                                    profile.getUsername(),
-                                    profile.getPassword()
-                            )
-                    );
-
-
-        }
-
-
-
-        return base;
-
-
-    }
-
-
-
-
-
-
-
-
-
-    public boolean testConnection() {
-
 
 
         try {
 
 
+            Properties props =
+                    new Properties();
 
-            SmbFile source =
-                    new SmbFile(
-                            getPath(profile.getSource()),
-                            getContext()
+
+
+            props.setProperty(
+                    "jcifs.smb.client.minVersion",
+                    "SMB202"
+            );
+
+
+            props.setProperty(
+                    "jcifs.smb.client.maxVersion",
+                    "SMB210"
+            );
+
+
+
+            CIFSContext base =
+                    new BaseContext(
+                            new PropertyConfiguration(props)
                     );
 
 
 
-            return source.exists();
+            if(!profile.isAnonymous()){
+
+
+                base =
+                        base.withCredentials(
+                                new NtlmPasswordAuthenticator(
+                                        "",
+                                        profile.getUsername(),
+                                        profile.getPassword()
+                                )
+                        );
+
+
+            }
+
+
+
+            context = base;
 
 
 
@@ -119,9 +79,40 @@ public class SmbManager {
         catch(Exception e){
 
 
+            throw new RuntimeException(e);
+
+
+        }
+
+
+    }
+
+
+
+
+
+
+    public boolean testConnection(){
+
+
+        try{
+
+
+            SmbFile file =
+                    new SmbFile(
+                            getPath(profile.getSource()),
+                            context
+                    );
+
+
+            return file.exists();
+
+
+        }
+        catch(Exception e){
+
 
             e.printStackTrace();
-
 
             return false;
 
@@ -137,27 +128,21 @@ public class SmbManager {
 
 
 
-
-
     public SmbFile[] listFolder(String folder)
             throws Exception {
-
 
 
         SmbFile dir =
                 new SmbFile(
                         getPath(folder),
-                        getContext()
+                        context
                 );
-
 
 
         return dir.listFiles();
 
 
-
     }
-
 
 
 
@@ -173,49 +158,39 @@ public class SmbManager {
     ){
 
 
-
-        try {
-
+        try{
 
 
-            SmbFile source =
+            SmbFile from =
                     new SmbFile(
                             getPath(fromFolder)
                                     + filename,
-                            getContext()
+                            context
                     );
 
 
 
-            SmbFile target =
+            SmbFile to =
                     new SmbFile(
                             getPath(toFolder)
                                     + filename,
-                            getContext()
+                            context
                     );
 
 
 
-
-
-            source.renameTo(target);
-
+            from.renameTo(to);
 
 
 
-            return !source.exists()
-                    &&
-                    target.exists();
-
+            return true;
 
 
         }
         catch(Exception e){
 
 
-
             e.printStackTrace();
-
 
             return false;
 
@@ -232,36 +207,34 @@ public class SmbManager {
 
 
 
-
     public int moveAll(
             String fromFolder,
             String toFolder
     ){
 
 
-
         int moved = 0;
 
 
+        try{
 
-        try {
+
+            SmbFile folder =
+                    new SmbFile(
+                            getPath(fromFolder),
+                            context
+                    );
 
 
 
             SmbFile[] files =
-                    listFolder(fromFolder);
+                    folder.listFiles();
 
 
 
 
-
-            if(files == null){
-
+            if(files == null)
                 return 0;
-
-            }
-
-
 
 
 
@@ -269,14 +242,8 @@ public class SmbManager {
             for(SmbFile file : files){
 
 
-
-                if(!file.isFile()){
-
+                if(!file.isFile())
                     continue;
-
-                }
-
-
 
 
 
@@ -291,7 +258,6 @@ public class SmbManager {
 
 
                 }
-
 
 
             }
@@ -312,7 +278,6 @@ public class SmbManager {
         return moved;
 
 
-
     }
 
 
@@ -326,15 +291,6 @@ public class SmbManager {
     private String getPath(String folder){
 
 
-
-        if(folder == null){
-
-            folder = "";
-
-        }
-
-
-
         while(folder.startsWith("/")){
 
 
@@ -346,23 +302,6 @@ public class SmbManager {
 
 
 
-
-
-        if(folder.endsWith("/")){
-
-
-            return "smb://"
-                    + profile.getServer()
-                    + "/"
-                    + folder;
-
-
-        }
-
-
-
-
-
         return "smb://"
                 + profile.getServer()
                 + "/"
@@ -371,7 +310,6 @@ public class SmbManager {
 
 
     }
-
 
 
 }
