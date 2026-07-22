@@ -7,6 +7,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+
 import androidx.appcompat.app.AppCompatActivity;
 
 
@@ -14,22 +15,58 @@ import androidx.appcompat.app.AppCompatActivity;
 public class AddProfileActivity extends AppCompatActivity {
 
 
-    EditText name;
-    EditText server;
-    EditText source;
-    EditText target;
-    EditText count;
+
+    private EditText name;
+
+    private EditText server;
+
+    private EditText source;
+
+    private EditText target;
+
+    private EditText count;
+
+
+
+    private ProfileManager profileManager;
+
+
+    private Profile editingProfile;
+
+
+
 
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
+
         super.onCreate(savedInstanceState);
+
+
+
+        profileManager =
+                new ProfileManager(this);
+
+
+
 
         createLayout();
 
+
+
+
+        loadExistingProfile();
+
+
+
     }
+
+
+
+
+
 
 
 
@@ -39,12 +76,19 @@ public class AddProfileActivity extends AppCompatActivity {
             String text
     ){
 
+
+
         TextView label =
                 new TextView(this);
 
+
+
         label.setText(text);
 
+
+
         layout.addView(label);
+
 
 
 
@@ -52,15 +96,23 @@ public class AddProfileActivity extends AppCompatActivity {
                 new EditText(this);
 
 
+
         field.setHint(text);
+
 
 
         layout.addView(field);
 
 
+
         return field;
 
+
     }
+
+
+
+
 
 
 
@@ -69,13 +121,16 @@ public class AddProfileActivity extends AppCompatActivity {
     private void createLayout(){
 
 
+
         LinearLayout layout =
                 new LinearLayout(this);
+
 
 
         layout.setOrientation(
                 LinearLayout.VERTICAL
         );
+
 
 
         layout.setPadding(
@@ -87,19 +142,26 @@ public class AddProfileActivity extends AppCompatActivity {
 
 
 
+
+
         TextView title =
                 new TextView(this);
 
 
+
         title.setText(
-                "Nový profil"
+                "Nastavení profilu"
         );
+
 
 
         title.setTextSize(26);
 
 
+
         layout.addView(title);
+
+
 
 
 
@@ -111,11 +173,15 @@ public class AddProfileActivity extends AppCompatActivity {
                 );
 
 
+
+
         server =
                 addField(
                         layout,
                         "SMB server"
                 );
+
+
 
 
         source =
@@ -125,11 +191,15 @@ public class AddProfileActivity extends AppCompatActivity {
                 );
 
 
+
+
         target =
                 addField(
                         layout,
                         "Cílová složka"
                 );
+
+
 
 
         count =
@@ -139,7 +209,10 @@ public class AddProfileActivity extends AppCompatActivity {
                 );
 
 
+
         count.setText("1");
+
+
 
 
 
@@ -149,21 +222,28 @@ public class AddProfileActivity extends AppCompatActivity {
                 new Button(this);
 
 
+
         save.setText(
                 "Uložit"
         );
 
 
+
         save.setOnClickListener(
-                v -> save()
+                v -> saveProfile()
         );
+
 
 
         layout.addView(save);
 
 
 
+
+
         setContentView(layout);
+
+
 
     }
 
@@ -173,65 +253,173 @@ public class AddProfileActivity extends AppCompatActivity {
 
 
 
-    private void save(){
 
 
-        Profile profile =
-                new Profile();
+    private void loadExistingProfile(){
 
 
 
-        profile.setName(
+        String profileName =
+                getIntent()
+                .getStringExtra("profileName");
+
+
+
+        if(profileName == null) {
+
+
+            return;
+
+
+        }
+
+
+
+
+
+
+        editingProfile =
+                profileManager.getProfileById(profileName);
+
+
+
+
+        if(editingProfile.getName() != null){
+
+
+
+            name.setText(
+                    editingProfile.getName()
+            );
+
+
+
+            server.setText(
+                    editingProfile.getServer()
+            );
+
+
+
+            source.setText(
+                    editingProfile.getSource()
+            );
+
+
+
+            target.setText(
+                    editingProfile.getTarget()
+            );
+
+
+
+            count.setText(
+                    String.valueOf(
+                            editingProfile.getCount()
+                    )
+            );
+
+
+
+        }
+
+
+
+    }
+
+
+
+
+
+
+
+
+
+    private void saveProfile(){
+
+
+
+        if(editingProfile == null){
+
+
+
+            editingProfile =
+                    new Profile();
+
+
+
+        }
+
+
+
+
+
+
+        editingProfile.setName(
                 name.getText().toString()
         );
 
 
-        profile.setServer(
+
+        editingProfile.setServer(
                 server.getText().toString()
         );
 
 
-        profile.setSource(
+
+        editingProfile.setSource(
                 source.getText().toString()
         );
 
 
-        profile.setTarget(
+
+        editingProfile.setTarget(
                 target.getText().toString()
         );
+
+
+
 
 
 
         try {
 
 
-            profile.setCount(
+
+            editingProfile.setCount(
                     Integer.parseInt(
                             count.getText().toString()
                     )
             );
 
 
+
         } catch(Exception e){
 
 
-            profile.setCount(1);
+
+            editingProfile.setCount(1);
+
+
 
         }
 
 
 
-        ProfileManager manager =
-                new ProfileManager(this);
 
 
-        manager.updateProfile(profile);
+
+        profileManager.updateProfile(
+                editingProfile
+        );
 
 
 
         finish();
 
+
+
     }
+
 
 
 }
