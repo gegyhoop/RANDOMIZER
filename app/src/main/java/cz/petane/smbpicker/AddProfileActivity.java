@@ -379,6 +379,146 @@ public class AddProfileActivity extends AppCompatActivity {
 
 
 
+    Profile testProfile =
+            new Profile();
+
+
+
+
+    testProfile.setName(
+            name.getText().toString()
+    );
+
+
+
+    testProfile.setServer(
+            server.getText().toString()
+    );
+
+
+
+    testProfile.setSource(
+            source.getText().toString()
+    );
+
+
+
+    testProfile.setTarget(
+            target.getText().toString()
+    );
+
+
+
+
+
+    SmbManager smb =
+            new SmbManager(testProfile);
+
+
+
+
+
+    try {
+
+
+
+        boolean sourceOK =
+                new jcifs.smb.SmbFile(
+                        "smb://"
+                        + testProfile.getServer()
+                        + "/"
+                        + testProfile.getSource().replaceFirst("^/+", "")
+                        + "/",
+                        smb.getContext()
+                ).exists();
+
+
+
+
+
+        boolean targetOK =
+                new jcifs.smb.SmbFile(
+                        "smb://"
+                        + testProfile.getServer()
+                        + "/"
+                        + testProfile.getTarget().replaceFirst("^/+", "")
+                        + "/",
+                        smb.getContext()
+                ).exists();
+
+
+
+
+
+
+
+        if(sourceOK && targetOK){
+
+
+
+            Toast.makeText(
+                    this,
+                    "Zdroj i cíl OK",
+                    Toast.LENGTH_LONG
+            ).show();
+
+
+
+        }
+        else if(!sourceOK){
+
+
+
+            Toast.makeText(
+                    this,
+                    "Zdrojová složka nenalezena",
+                    Toast.LENGTH_LONG
+            ).show();
+
+
+
+        }
+        else {
+
+
+
+            Toast.makeText(
+                    this,
+                    "Cílová složka nenalezena",
+                    Toast.LENGTH_LONG
+            ).show();
+
+
+
+        }
+
+
+
+    }
+    catch(Exception e){
+
+
+
+        Toast.makeText(
+                this,
+                "Chyba připojení",
+                Toast.LENGTH_LONG
+        ).show();
+
+
+
+        e.printStackTrace();
+
+
+
+    }
+
+
+
+}
+
+
+
         Profile testProfile =
                 new Profile();
 
