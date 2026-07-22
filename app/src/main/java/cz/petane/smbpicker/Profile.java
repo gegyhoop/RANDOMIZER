@@ -1,20 +1,26 @@
 package cz.petane.smbpicker;
 
+
 public class Profile {
 
-    public String name;
 
-    public String server;
+    private String name;
 
-    public String username;
+    private String server;
 
-    public String password;
+    private String username;
 
-    public String sourceFolder;
+    private String password;
 
-    public String targetFolder;
+    private String source;
 
-    public int filesToMove = 1;
+    private String target;
+
+    private boolean anonymous;
+
+
+    private int filesToMove = 1;
+
 
 
     public Profile() {
@@ -22,21 +28,123 @@ public class Profile {
     }
 
 
-    public Profile(
-            String name,
-            String server,
-            String username,
-            String password,
-            String sourceFolder,
-            String targetFolder
-    ) {
+
+    public String getName() {
+
+        return name;
+
+    }
+
+
+    public void setName(String name) {
 
         this.name = name;
+
+    }
+
+
+
+    public String getServer() {
+
+        return server;
+
+    }
+
+
+    public void setServer(String server) {
+
         this.server = server;
+
+    }
+
+
+
+    public String getUsername() {
+
+        return username;
+
+    }
+
+
+    public void setUsername(String username) {
+
         this.username = username;
+
+    }
+
+
+
+    public String getPassword() {
+
+        return password;
+
+    }
+
+
+    public void setPassword(String password) {
+
         this.password = password;
-        this.sourceFolder = sourceFolder;
-        this.targetFolder = targetFolder;
+
+    }
+
+
+
+    public String getSource() {
+
+        return source;
+
+    }
+
+
+    public void setSource(String source) {
+
+        this.source = source;
+
+    }
+
+
+
+    public String getTarget() {
+
+        return target;
+
+    }
+
+
+    public void setTarget(String target) {
+
+        this.target = target;
+
+    }
+
+
+
+    public boolean isAnonymous() {
+
+        return anonymous;
+
+    }
+
+
+    public void setAnonymous(boolean anonymous) {
+
+        this.anonymous = anonymous;
+
+    }
+
+
+
+    public int getFilesToMove() {
+
+        return filesToMove;
+
+    }
+
+
+    public void setFilesToMove(int filesToMove) {
+
+        this.filesToMove = filesToMove;
+
     }
 
 }
