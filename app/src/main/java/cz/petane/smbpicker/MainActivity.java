@@ -2,13 +2,26 @@ package cz.petane.smbpicker;
 
 
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.util.ArrayList;
+
+
 
 public class MainActivity extends AppCompatActivity {
+
+
+    private LinearLayout layout;
+
+    private ProfileManager profileManager;
+
+    private ArrayList<Profile> profiles;
+
 
 
     @Override
@@ -17,36 +30,136 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
 
-        TextView text = new TextView(this);
-
-        text.setText(
-                "SMB Random Picker\n\n"
-                + "Aplikace spuštěna"
-        );
-
-        text.setTextSize(22);
+        profileManager = new ProfileManager(this);
 
 
-        Button button = new Button(this);
-
-        button.setText("Test");
+        createLayout();
 
 
-        android.widget.LinearLayout layout =
-                new android.widget.LinearLayout(this);
+        loadProfiles();
 
+    }
+
+
+
+
+
+    private void createLayout() {
+
+
+        layout = new LinearLayout(this);
 
         layout.setOrientation(
-                android.widget.LinearLayout.VERTICAL
+                LinearLayout.VERTICAL
         );
 
 
-        layout.addView(text);
+        TextView title = new TextView(this);
 
-        layout.addView(button);
+        title.setText(
+                "SMB Random Picker"
+        );
+
+        title.setTextSize(26);
+
+
+        layout.addView(title);
+
+
+
+        Button add = new Button(this);
+
+        add.setText(
+                "+ Přidat profil"
+        );
+
+
+        add.setOnClickListener(
+                v -> addTestProfile()
+        );
+
+
+        layout.addView(add);
+
 
 
         setContentView(layout);
+
+    }
+
+
+
+
+
+    private void loadProfiles() {
+
+
+        profiles =
+                profileManager.getProfiles();
+
+
+        showProfiles();
+
+    }
+
+
+
+
+
+    private void showProfiles() {
+
+
+        for(Profile profile : profiles) {
+
+
+            TextView item =
+                    new TextView(this);
+
+
+            item.setText(
+                    "📁 "
+                    + profile.getName()
+            );
+
+
+            item.setTextSize(20);
+
+
+            layout.addView(item);
+
+        }
+
+
+    }
+
+
+
+
+
+    private void addTestProfile() {
+
+
+        Profile p =
+                new Profile();
+
+
+        p.setName(
+                "Test seriál"
+        );
+
+
+        p.setServer(
+                "192.168.1.1"
+        );
+
+
+        profiles.add(p);
+
+
+        profileManager.updateProfile(p);
+
+
+        recreate();
 
     }
 
