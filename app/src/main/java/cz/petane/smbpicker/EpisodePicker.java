@@ -1,43 +1,206 @@
 package cz.petane.smbpicker;
 
+
 import java.util.ArrayList;
 import java.util.List;
+
+
 import jcifs.smb.SmbFile;
+
+
 
 public class EpisodePicker {
 
+
+
     private final Profile profile;
 
-    public EpisodePicker(Profile profile) {
+
+
+    public EpisodePicker(Profile profile){
+
+
         this.profile = profile;
+
+
     }
 
-    public List<String> getRandomFiles() {
-        List<String> selected = new ArrayList<>();
+
+
+
+
+
+
+
+    public List<String> prepareEpisodes(){
+
+
+
+        List<String> selected =
+                new ArrayList<>();
+
+
 
         try {
-            SmbManager smbManager = new SmbManager(profile);
-            String path = "smb://" + profile.getServer() + "/" + profile.getSource() + "/";
 
-            SmbFile dir = new SmbFile(path, smbManager.getContext());
-            SmbFile[] files = dir.listFiles();
 
-            if (files == null || files.length == 0) {
+
+            SmbManager smb =
+                    new SmbManager(profile);
+
+
+
+
+
+            // 1) vrátit staré díly zpět
+
+            smb.moveAll(
+                    profile.getTarget(),
+                    profile.getSource()
+            );
+
+
+
+
+
+
+
+            // 2) načíst zdroj
+
+
+
+            SmbFile[] files =
+                    smb.listFolder(
+                            profile.getSource()
+                    );
+
+
+
+
+
+            if(files == null){
+
                 return selected;
+
             }
 
-            // Jednoduchý random výběr (pro test)
-            int count = Math.min(profile.getCount(), files.length);
-            // TODO: lepší random + filtrace (jen videa atd.)
 
-            for (int i = 0; i < count; i++) {
-                int randomIndex = (int) (Math.random() * files.length);
-                selected.add(files[randomIndex].getName());
+
+
+
+
+            int count =
+                    Math.min(
+                            profile.getCount(),
+                            files.length
+                    );
+
+
+
+
+
+
+
+            ArrayList<String> available =
+                    new ArrayList<>();
+
+
+
+
+            for(SmbFile file : files){
+
+
+
+                if(file.isFile()){
+
+
+                    available.add(
+                            file.getName()
+                    );
+
+
+                }
+
+
             }
 
-        } catch (Exception e) {
-            e.printStackTrace();
+
+
+
+
+
+
+            // 3) náhodný výběr
+
+
+
+            for(int i = 0; i < count && !available.isEmpty(); i++){
+
+
+
+                int index =
+                        (int)(
+                                Math.random()
+                                *
+                                available.size()
+                        );
+
+
+
+                selected.add(
+                        available.remove(index)
+                );
+
+
+
+            }
+
+
+
+
+
+
+
+            // 4) přesun vybraných do cíle
+
+
+
+            for(String file : selected){
+
+
+
+                smb.moveFile(
+                        profile.getSource(),
+                        profile.getTarget(),
+                        file
+                );
+
+
+            }
+
+
+
+
         }
+        catch(Exception e){
+
+
+
+            e.printStackTrace();
+
+
+        }
+
+
+
+
+
         return selected;
+
+
+
     }
+
+
+
 }
