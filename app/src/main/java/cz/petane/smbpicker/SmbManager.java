@@ -20,16 +20,11 @@ public class SmbManager {
 
 
 
-
-
     public SmbManager(Profile profile) {
-
 
         this.profile = profile;
 
-
     }
-
 
 
 
@@ -40,16 +35,13 @@ public class SmbManager {
 
 
 
-        Properties props =
-                new Properties();
-
+        Properties props = new Properties();
 
 
         props.setProperty(
                 "jcifs.smb.client.enableSMB2",
                 "true"
         );
-
 
 
         props.setProperty(
@@ -59,13 +51,10 @@ public class SmbManager {
 
 
 
-
         CIFSContext base =
                 new BaseContext(
                         new PropertyConfiguration(props)
                 );
-
-
 
 
 
@@ -82,13 +71,11 @@ public class SmbManager {
                             )
                     );
 
-
         }
 
 
 
         return base;
-
 
     }
 
@@ -107,23 +94,11 @@ public class SmbManager {
         try {
 
 
-
-            String path =
-                    "smb://"
-                    + profile.getServer()
-                    + "/"
-                    + profile.getSource()
-                    + "/";
-
-
-
-
             SmbFile file =
                     new SmbFile(
-                            path,
+                            getPath(profile.getSource()),
                             getContext()
                     );
-
 
 
             return file.exists();
@@ -139,7 +114,6 @@ public class SmbManager {
 
             return false;
 
-
         }
 
 
@@ -153,7 +127,35 @@ public class SmbManager {
 
 
 
+    public SmbFile[] listFolder(String folder)
+            throws Exception {
+
+
+
+        SmbFile dir =
+                new SmbFile(
+                        getPath(folder),
+                        getContext()
+                );
+
+
+
+        return dir.listFiles();
+
+
+    }
+
+
+
+
+
+
+
+
+
     public boolean moveFile(
+            String fromFolder,
+            String toFolder,
             String filename
     ){
 
@@ -163,34 +165,10 @@ public class SmbManager {
 
 
 
-            String sourcePath =
-                    "smb://"
-                    + profile.getServer()
-                    + "/"
-                    + profile.getSource()
-                    + "/"
-                    + filename;
-
-
-
-
-            String targetPath =
-                    "smb://"
-                    + profile.getServer()
-                    + "/"
-                    + profile.getTarget()
-                    + "/"
-                    + filename;
-
-
-
-
-
-
-
             SmbFile source =
                     new SmbFile(
-                            sourcePath,
+                            getPath(fromFolder)
+                            + filename,
                             getContext()
                     );
 
@@ -198,10 +176,10 @@ public class SmbManager {
 
             SmbFile target =
                     new SmbFile(
-                            targetPath,
+                            getPath(toFolder)
+                            + filename,
                             getContext()
                     );
-
 
 
 
@@ -224,8 +202,129 @@ public class SmbManager {
             return false;
 
 
+        }
+
+
+
+    }
+
+
+
+
+
+
+
+
+
+    public int moveAll(
+            String fromFolder,
+            String toFolder
+    ){
+
+
+
+        int moved = 0;
+
+
+
+        try {
+
+
+
+            SmbFile[] files =
+                    listFolder(fromFolder);
+
+
+
+
+            if(files == null){
+
+                return 0;
+
+            }
+
+
+
+
+            for(SmbFile file : files){
+
+
+
+                if(!file.isFile()){
+
+                    continue;
+
+                }
+
+
+
+
+                if(moveFile(
+                        fromFolder,
+                        toFolder,
+                        file.getName()
+                )){
+
+
+                    moved++;
+
+
+                }
+
+
+
+            }
+
+
 
         }
+        catch(Exception e){
+
+
+            e.printStackTrace();
+
+
+        }
+
+
+
+        return moved;
+
+
+
+    }
+
+
+
+
+
+
+
+
+
+    private String getPath(String folder){
+
+
+
+        if(folder.endsWith("/")){
+
+
+            return "smb://"
+                    + profile.getServer()
+                    + "/"
+                    + folder;
+
+
+
+        }
+
+
+
+        return "smb://"
+                + profile.getServer()
+                + "/"
+                + folder
+                + "/";
 
 
 
