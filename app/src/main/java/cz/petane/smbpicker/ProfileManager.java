@@ -13,48 +13,48 @@ import java.util.ArrayList;
 public class ProfileManager {
 
 
-    private static final String FILE = "profiles.json";
+    private static final String PREF = "profiles";
 
 
-    public static ArrayList<Profile> load(Context context) {
+    private final Context context;
 
 
-        try {
+    public ProfileManager(Context context) {
 
-            String json =
-                    context
-                    .getSharedPreferences("data",0)
-                    .getString(FILE,"");
-
-
-            if(json.isEmpty()) {
-
-                return new ArrayList<>();
-
-            }
-
-
-            Type type =
-                    new TypeToken<ArrayList<Profile>>(){}.getType();
-
-
-            return new Gson().fromJson(json,type);
-
-
-        } catch(Exception e) {
-
-            return new ArrayList<>();
-
-        }
+        this.context = context;
 
     }
 
 
 
-    public static void save(
-            Context context,
-            ArrayList<Profile> profiles
-    ) {
+    public ArrayList<Profile> getProfiles() {
+
+
+        String json =
+                context
+                .getSharedPreferences(PREF,0)
+                .getString("data","");
+
+
+        if(json.isEmpty()) {
+
+            return new ArrayList<>();
+
+        }
+
+
+        Type type =
+                new TypeToken<ArrayList<Profile>>(){}.getType();
+
+
+        return new Gson().fromJson(json,type);
+
+    }
+
+
+
+
+    public void saveProfiles(ArrayList<Profile> profiles) {
 
 
         String json =
@@ -62,11 +62,82 @@ public class ProfileManager {
 
 
         context
-                .getSharedPreferences("data",0)
+                .getSharedPreferences(PREF,0)
                 .edit()
-                .putString(FILE,json)
+                .putString("data",json)
                 .apply();
 
     }
+
+
+
+
+    public Profile getProfileById(String id) {
+
+
+        ArrayList<Profile> profiles = getProfiles();
+
+
+        for(Profile p : profiles) {
+
+
+            if(p.getName()!=null &&
+                    p.getName().equals(id)) {
+
+                return p;
+
+            }
+
+        }
+
+
+        return new Profile();
+
+    }
+
+
+
+
+
+    public void updateProfile(Profile profile) {
+
+
+        ArrayList<Profile> profiles = getProfiles();
+
+
+        boolean updated = false;
+
+
+        for(int i=0;i<profiles.size();i++) {
+
+
+            if(profiles.get(i).getName()
+                    .equals(profile.getName())) {
+
+
+                profiles.set(i,profile);
+
+                updated = true;
+
+                break;
+
+            }
+
+        }
+
+
+
+        if(!updated) {
+
+            profiles.add(profile);
+
+        }
+
+
+
+        saveProfiles(profiles);
+
+    }
+
 
 }
