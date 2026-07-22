@@ -31,15 +31,12 @@ public class EpisodeActivity extends AppCompatActivity {
                         .getStringExtra("profileName");
 
 
-
         ProfileManager manager =
                 new ProfileManager(this);
 
 
-
         profile =
                 manager.getProfileById(name);
-
 
 
         createLayout();
@@ -134,6 +131,8 @@ public class EpisodeActivity extends AppCompatActivity {
 
         result.setTextSize(18);
 
+        result.setTextIsSelectable(true);
+
 
         layout.addView(result);
 
@@ -201,9 +200,34 @@ public class EpisodeActivity extends AppCompatActivity {
                         finalFiles.size() == profile.getCount()){
 
 
-                    result.setText(
-                            "HOTOVO"
+                    StringBuilder text =
+                            new StringBuilder();
+
+
+                    text.append(
+                            "Přesunuté díly:\n\n"
                     );
+
+
+                    for(String file : finalFiles){
+
+
+                        text.append(file)
+                                .append("\n");
+
+
+                    }
+
+
+                    text.append(
+                            "\nHOTOVO"
+                    );
+
+
+                    result.setText(
+                            text.toString()
+                    );
+
 
 
                     Toast.makeText(
