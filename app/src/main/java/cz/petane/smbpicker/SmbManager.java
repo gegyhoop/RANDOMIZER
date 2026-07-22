@@ -31,6 +31,7 @@ public class SmbManager {
 
 
 
+
     public CIFSContext getContext() throws Exception {
 
 
@@ -38,10 +39,12 @@ public class SmbManager {
         Properties props = new Properties();
 
 
+
         props.setProperty(
                 "jcifs.smb.client.enableSMB2",
                 "true"
         );
+
 
 
         props.setProperty(
@@ -58,6 +61,8 @@ public class SmbManager {
 
 
 
+
+
         if(!profile.isAnonymous()) {
 
 
@@ -71,11 +76,13 @@ public class SmbManager {
                             )
                     );
 
+
         }
 
 
 
         return base;
+
 
     }
 
@@ -94,14 +101,26 @@ public class SmbManager {
         try {
 
 
-            SmbFile file =
+
+            SmbFile source =
                     new SmbFile(
                             getPath(profile.getSource()),
                             getContext()
                     );
 
 
-            return file.exists();
+
+            SmbFile target =
+                    new SmbFile(
+                            getPath(profile.getTarget()),
+                            getContext()
+                    );
+
+
+
+            return source.exists()
+                    &&
+                    target.exists();
 
 
 
@@ -109,10 +128,13 @@ public class SmbManager {
         catch(Exception e){
 
 
+
             e.printStackTrace();
 
 
+
             return false;
+
 
         }
 
@@ -141,6 +163,7 @@ public class SmbManager {
 
 
         return dir.listFiles();
+
 
 
     }
@@ -199,11 +222,11 @@ public class SmbManager {
             e.printStackTrace();
 
 
+
             return false;
 
 
         }
-
 
 
     }
@@ -237,11 +260,14 @@ public class SmbManager {
 
 
 
+
             if(files == null){
 
                 return 0;
 
             }
+
+
 
 
 
@@ -255,6 +281,7 @@ public class SmbManager {
                     continue;
 
                 }
+
 
 
 
@@ -279,6 +306,7 @@ public class SmbManager {
 
         }
         catch(Exception e){
+
 
 
             e.printStackTrace();
@@ -306,6 +334,29 @@ public class SmbManager {
 
 
 
+        if(folder == null){
+
+            folder = "";
+
+        }
+
+
+
+        // odstranění počátečních lomítek
+
+        while(folder.startsWith("/")){
+
+
+            folder =
+                    folder.substring(1);
+
+
+        }
+
+
+
+
+
         if(folder.endsWith("/")){
 
 
@@ -317,6 +368,7 @@ public class SmbManager {
 
 
         }
+
 
 
 
