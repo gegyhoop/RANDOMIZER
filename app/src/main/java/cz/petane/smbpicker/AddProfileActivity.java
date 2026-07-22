@@ -18,23 +18,15 @@ public class AddProfileActivity extends AppCompatActivity {
 
 
     private EditText name;
-
     private EditText server;
-
     private EditText source;
-
     private EditText target;
-
     private EditText count;
-
 
 
     private ProfileManager profileManager;
 
-
     private Profile editingProfile;
-
-
 
 
 
@@ -79,18 +71,14 @@ public class AddProfileActivity extends AppCompatActivity {
     ){
 
 
-
         TextView label =
                 new TextView(this);
-
 
 
         label.setText(text);
 
 
-
         layout.addView(label);
-
 
 
 
@@ -99,13 +87,10 @@ public class AddProfileActivity extends AppCompatActivity {
                 new EditText(this);
 
 
-
         field.setHint(text);
 
 
-
         layout.addView(field);
-
 
 
         return field;
@@ -124,16 +109,13 @@ public class AddProfileActivity extends AppCompatActivity {
     private void createLayout(){
 
 
-
         LinearLayout layout =
                 new LinearLayout(this);
-
 
 
         layout.setOrientation(
                 LinearLayout.VERTICAL
         );
-
 
 
         layout.setPadding(
@@ -146,11 +128,8 @@ public class AddProfileActivity extends AppCompatActivity {
 
 
 
-
-
         TextView title =
                 new TextView(this);
-
 
 
         title.setText(
@@ -158,15 +137,10 @@ public class AddProfileActivity extends AppCompatActivity {
         );
 
 
-
         title.setTextSize(26);
 
 
-
         layout.addView(title);
-
-
-
 
 
 
@@ -180,15 +154,11 @@ public class AddProfileActivity extends AppCompatActivity {
 
 
 
-
-
         server =
                 addField(
                         layout,
                         "SMB server"
                 );
-
-
 
 
 
@@ -200,15 +170,11 @@ public class AddProfileActivity extends AppCompatActivity {
 
 
 
-
-
         target =
                 addField(
                         layout,
                         "Cílová složka"
                 );
-
-
 
 
 
@@ -219,12 +185,7 @@ public class AddProfileActivity extends AppCompatActivity {
                 );
 
 
-
         count.setText("1");
-
-
-
-
 
 
 
@@ -234,11 +195,9 @@ public class AddProfileActivity extends AppCompatActivity {
                 new Button(this);
 
 
-
         test.setText(
                 "Test SMB připojení"
         );
-
 
 
         test.setOnClickListener(
@@ -246,12 +205,7 @@ public class AddProfileActivity extends AppCompatActivity {
         );
 
 
-
         layout.addView(test);
-
-
-
-
 
 
 
@@ -261,11 +215,9 @@ public class AddProfileActivity extends AppCompatActivity {
                 new Button(this);
 
 
-
         save.setText(
                 "Uložit"
         );
-
 
 
         save.setOnClickListener(
@@ -273,11 +225,7 @@ public class AddProfileActivity extends AppCompatActivity {
         );
 
 
-
         layout.addView(save);
-
-
-
 
 
 
@@ -298,18 +246,15 @@ public class AddProfileActivity extends AppCompatActivity {
     private void loadExistingProfile(){
 
 
-
         String profileName =
                 getIntent()
-                .getStringExtra("profileName");
+                        .getStringExtra("profileName");
 
 
 
-        if(profileName == null) {
-
+        if(profileName == null){
 
             return;
-
 
         }
 
@@ -317,10 +262,8 @@ public class AddProfileActivity extends AppCompatActivity {
 
 
 
-
         editingProfile =
                 profileManager.getProfileById(profileName);
-
 
 
 
@@ -379,146 +322,6 @@ public class AddProfileActivity extends AppCompatActivity {
 
 
 
-    Profile testProfile =
-            new Profile();
-
-
-
-
-    testProfile.setName(
-            name.getText().toString()
-    );
-
-
-
-    testProfile.setServer(
-            server.getText().toString()
-    );
-
-
-
-    testProfile.setSource(
-            source.getText().toString()
-    );
-
-
-
-    testProfile.setTarget(
-            target.getText().toString()
-    );
-
-
-
-
-
-    SmbManager smb =
-            new SmbManager(testProfile);
-
-
-
-
-
-    try {
-
-
-
-        boolean sourceOK =
-                new jcifs.smb.SmbFile(
-                        "smb://"
-                        + testProfile.getServer()
-                        + "/"
-                        + testProfile.getSource().replaceFirst("^/+", "")
-                        + "/",
-                        smb.getContext()
-                ).exists();
-
-
-
-
-
-        boolean targetOK =
-                new jcifs.smb.SmbFile(
-                        "smb://"
-                        + testProfile.getServer()
-                        + "/"
-                        + testProfile.getTarget().replaceFirst("^/+", "")
-                        + "/",
-                        smb.getContext()
-                ).exists();
-
-
-
-
-
-
-
-        if(sourceOK && targetOK){
-
-
-
-            Toast.makeText(
-                    this,
-                    "Zdroj i cíl OK",
-                    Toast.LENGTH_LONG
-            ).show();
-
-
-
-        }
-        else if(!sourceOK){
-
-
-
-            Toast.makeText(
-                    this,
-                    "Zdrojová složka nenalezena",
-                    Toast.LENGTH_LONG
-            ).show();
-
-
-
-        }
-        else {
-
-
-
-            Toast.makeText(
-                    this,
-                    "Cílová složka nenalezena",
-                    Toast.LENGTH_LONG
-            ).show();
-
-
-
-        }
-
-
-
-    }
-    catch(Exception e){
-
-
-
-        Toast.makeText(
-                this,
-                "Chyba připojení",
-                Toast.LENGTH_LONG
-        ).show();
-
-
-
-        e.printStackTrace();
-
-
-
-    }
-
-
-
-}
-
-
-
         Profile testProfile =
                 new Profile();
 
@@ -548,6 +351,8 @@ public class AddProfileActivity extends AppCompatActivity {
 
 
 
+
+
         SmbManager smb =
                 new SmbManager(testProfile);
 
@@ -564,6 +369,7 @@ public class AddProfileActivity extends AppCompatActivity {
         if(result){
 
 
+
             Toast.makeText(
                     this,
                     "Připojení OK",
@@ -571,8 +377,10 @@ public class AddProfileActivity extends AppCompatActivity {
             ).show();
 
 
+
         }
         else {
+
 
 
             Toast.makeText(
@@ -580,6 +388,7 @@ public class AddProfileActivity extends AppCompatActivity {
                     "Připojení selhalo",
                     Toast.LENGTH_LONG
             ).show();
+
 
 
         }
@@ -610,7 +419,6 @@ public class AddProfileActivity extends AppCompatActivity {
 
 
         }
-
 
 
 
