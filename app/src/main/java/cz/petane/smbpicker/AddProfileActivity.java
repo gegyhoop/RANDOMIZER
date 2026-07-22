@@ -2,7 +2,9 @@ package cz.petane.smbpicker;
 
 
 import android.os.Bundle;
+import android.text.InputType;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -19,14 +21,21 @@ public class AddProfileActivity extends AppCompatActivity {
 
     private EditText name;
     private EditText server;
+    private EditText username;
+    private EditText password;
     private EditText source;
     private EditText target;
     private EditText count;
+
+    private CheckBox anonymous;
+
 
 
     private ProfileManager profileManager;
 
     private Profile editingProfile;
+
+
 
 
 
@@ -162,6 +171,65 @@ public class AddProfileActivity extends AppCompatActivity {
 
 
 
+        anonymous =
+                new CheckBox(this);
+
+
+        anonymous.setText(
+                "Anonymní přihlášení"
+        );
+
+
+        anonymous.setOnCheckedChangeListener(
+                (buttonView, isChecked) -> {
+
+
+                    username.setEnabled(!isChecked);
+
+                    password.setEnabled(!isChecked);
+
+
+                    if(isChecked){
+
+                        username.setText("");
+
+                        password.setText("");
+
+                    }
+
+
+                }
+        );
+
+
+        layout.addView(anonymous);
+
+
+
+
+
+        username =
+                addField(
+                        layout,
+                        "Uživatel"
+                );
+
+
+
+        password =
+                addField(
+                        layout,
+                        "Heslo"
+                );
+
+
+        password.setInputType(
+                InputType.TYPE_CLASS_TEXT |
+                InputType.TYPE_TEXT_VARIATION_PASSWORD
+        );
+
+
+
         source =
                 addField(
                         layout,
@@ -234,15 +302,6 @@ public class AddProfileActivity extends AppCompatActivity {
 
 
     }
-
-
-
-
-
-
-
-
-
     private void loadExistingProfile(){
 
 
@@ -269,7 +328,8 @@ public class AddProfileActivity extends AppCompatActivity {
 
 
 
-        if(editingProfile.getName() != null){
+        if(editingProfile != null &&
+                editingProfile.getName() != null){
 
 
 
@@ -281,6 +341,24 @@ public class AddProfileActivity extends AppCompatActivity {
 
             server.setText(
                     editingProfile.getServer()
+            );
+
+
+
+            username.setText(
+                    editingProfile.getUsername()
+            );
+
+
+
+            password.setText(
+                    editingProfile.getPassword()
+            );
+
+
+
+            anonymous.setChecked(
+                    editingProfile.isAnonymous()
             );
 
 
@@ -318,37 +396,96 @@ public class AddProfileActivity extends AppCompatActivity {
 
 
 
-    private void testConnection(){
+    private Profile createProfileFromFields(){
 
 
-
-        Profile testProfile =
+        Profile profile =
                 new Profile();
 
 
 
-        testProfile.setName(
+        profile.setName(
                 name.getText().toString()
         );
 
 
 
-        testProfile.setServer(
+        profile.setServer(
                 server.getText().toString()
         );
 
 
 
-        testProfile.setSource(
+        profile.setUsername(
+                username.getText().toString()
+        );
+
+
+
+        profile.setPassword(
+                password.getText().toString()
+        );
+
+
+
+        profile.setAnonymous(
+                anonymous.isChecked()
+        );
+
+
+
+        profile.setSource(
                 source.getText().toString()
         );
 
 
 
-        testProfile.setTarget(
+        profile.setTarget(
                 target.getText().toString()
         );
 
+
+
+        try {
+
+
+            profile.setCount(
+                    Integer.parseInt(
+                            count.getText().toString()
+                    )
+            );
+
+
+        }
+        catch(Exception e){
+
+
+            profile.setCount(1);
+
+
+        }
+
+
+
+        return profile;
+
+
+    }
+
+
+
+
+
+
+
+
+
+    private void testConnection(){
+
+
+
+        Profile testProfile =
+                createProfileFromFields();
 
 
 
@@ -385,7 +522,7 @@ public class AddProfileActivity extends AppCompatActivity {
 
             Toast.makeText(
                     this,
-                    "Připojení selhalo",
+                    "Připojení selhalo - zkontroluj Logcat",
                     Toast.LENGTH_LONG
             ).show();
 
@@ -424,56 +561,50 @@ public class AddProfileActivity extends AppCompatActivity {
 
 
 
+        Profile newProfile =
+                createProfileFromFields();
+
+
+
 
         editingProfile.setName(
-                name.getText().toString()
+                newProfile.getName()
         );
-
 
 
         editingProfile.setServer(
-                server.getText().toString()
+                newProfile.getServer()
         );
 
+
+        editingProfile.setUsername(
+                newProfile.getUsername()
+        );
+
+
+        editingProfile.setPassword(
+                newProfile.getPassword()
+        );
+
+
+        editingProfile.setAnonymous(
+                newProfile.isAnonymous()
+        );
 
 
         editingProfile.setSource(
-                source.getText().toString()
+                newProfile.getSource()
         );
-
 
 
         editingProfile.setTarget(
-                target.getText().toString()
+                newProfile.getTarget()
         );
 
 
-
-
-
-
-        try {
-
-
-
-            editingProfile.setCount(
-                    Integer.parseInt(
-                            count.getText().toString()
-                    )
-            );
-
-
-
-        }
-        catch(Exception e){
-
-
-
-            editingProfile.setCount(1);
-
-
-
-        }
+        editingProfile.setCount(
+                newProfile.getCount()
+        );
 
 
 
@@ -491,7 +622,6 @@ public class AddProfileActivity extends AppCompatActivity {
 
 
     }
-
 
 
 }
