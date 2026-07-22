@@ -1,45 +1,29 @@
 package cz.petane.smbpicker;
 
-
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-
 import androidx.appcompat.app.AppCompatActivity;
 
-
 import java.util.List;
-
 
 
 public class EpisodeActivity extends AppCompatActivity {
 
 
-
     private Profile profile;
 
-
     private TextView result;
-
-
-
-
-
 
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
 
-
-
         super.onCreate(savedInstanceState);
-
-
-
 
 
         String name =
@@ -48,12 +32,8 @@ public class EpisodeActivity extends AppCompatActivity {
 
 
 
-
-
         ProfileManager manager =
                 new ProfileManager(this);
-
-
 
 
 
@@ -62,35 +42,22 @@ public class EpisodeActivity extends AppCompatActivity {
 
 
 
-
-
         createLayout();
-
-
 
     }
 
 
 
 
-
-
-
-
-
     private void createLayout(){
-
-
 
         LinearLayout layout =
                 new LinearLayout(this);
 
 
-
         layout.setOrientation(
                 LinearLayout.VERTICAL
         );
-
 
 
         layout.setPadding(
@@ -102,30 +69,20 @@ public class EpisodeActivity extends AppCompatActivity {
 
 
 
-
-
-
-
         TextView title =
                 new TextView(this);
 
 
-
         title.setText(
                 "Aktualizovat díly - "
-                + profile.getName()
+                        + profile.getName()
         );
-
 
 
         title.setTextSize(26);
 
 
-
         layout.addView(title);
-
-
-
 
 
 
@@ -135,26 +92,17 @@ public class EpisodeActivity extends AppCompatActivity {
                 new TextView(this);
 
 
-
         info.setText(
-
                 "Zdroj:\n"
-                + profile.getSource()
-
-                + "\n\nCíl:\n"
-                + profile.getTarget()
-
-                + "\n\nPočet dílů:\n"
-                + profile.getCount()
-
+                        + profile.getSource()
+                        + "\n\nCíl:\n"
+                        + profile.getTarget()
+                        + "\n\nPočet dílů:\n"
+                        + profile.getCount()
         );
 
 
-
         layout.addView(info);
-
-
-
 
 
 
@@ -164,11 +112,9 @@ public class EpisodeActivity extends AppCompatActivity {
                 new Button(this);
 
 
-
         run.setText(
                 "Aktualizovat díly"
         );
-
 
 
         run.setOnClickListener(
@@ -176,10 +122,7 @@ public class EpisodeActivity extends AppCompatActivity {
         );
 
 
-
         layout.addView(run);
-
-
 
 
 
@@ -189,28 +132,16 @@ public class EpisodeActivity extends AppCompatActivity {
                 new TextView(this);
 
 
-
         result.setTextSize(18);
-
 
 
         layout.addView(result);
 
 
 
-
-
-
-
         setContentView(layout);
 
-
-
     }
-
-
-
-
 
 
 
@@ -219,93 +150,96 @@ public class EpisodeActivity extends AppCompatActivity {
     private void updateEpisodes(){
 
 
-
-        try {
-
-
-
-            EpisodePicker picker =
-                    new EpisodePicker(profile);
+        Toast.makeText(
+                this,
+                "Pracuji...",
+                Toast.LENGTH_SHORT
+        ).show();
 
 
 
+        new Thread(() -> {
 
 
-            List<String> files =
-                    picker.prepareEpisodes();
+            List<String> files = null;
 
 
+            try {
 
 
-
-
-
-            if(files.size() == profile.getCount()){
-
-
-
-                result.setText(
-                        "HOTOVO"
-                );
+                EpisodePicker picker =
+                        new EpisodePicker(profile);
 
 
 
-                Toast.makeText(
-                        this,
-                        "HOTOVO",
-                        Toast.LENGTH_SHORT
-                ).show();
+                files =
+                        picker.prepareEpisodes();
 
 
 
             }
-            else {
+            catch(Exception e){
 
 
-
-                result.setText(
-                        "SELHALO"
-                );
-
-
-
-                Toast.makeText(
-                        this,
-                        "SELHALO",
-                        Toast.LENGTH_SHORT
-                ).show();
-
+                e.printStackTrace();
 
 
             }
 
 
 
-        }
-        catch(Exception e){
+            List<String> finalFiles = files;
 
 
 
-            result.setText(
-                    "SELHALO"
-            );
+            runOnUiThread(() -> {
 
 
 
-            Toast.makeText(
-                    this,
-                    "SELHALO",
-                    Toast.LENGTH_SHORT
-            ).show();
+                if(finalFiles != null
+                        &&
+                        finalFiles.size() == profile.getCount()){
+
+
+                    result.setText(
+                            "HOTOVO"
+                    );
+
+
+                    Toast.makeText(
+                            this,
+                            "HOTOVO",
+                            Toast.LENGTH_SHORT
+                    ).show();
+
+
+                }
+                else {
+
+
+                    result.setText(
+                            "SELHALO"
+                    );
+
+
+                    Toast.makeText(
+                            this,
+                            "SELHALO",
+                            Toast.LENGTH_SHORT
+                    ).show();
+
+
+                }
+
+
+            });
 
 
 
-        }
-
+        }).start();
 
 
     }
-
 
 
 }
