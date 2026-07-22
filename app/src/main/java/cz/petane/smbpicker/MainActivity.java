@@ -6,8 +6,11 @@ import android.os.Bundle;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
+
 
 import androidx.appcompat.app.AppCompatActivity;
+
 
 import java.util.ArrayList;
 
@@ -16,29 +19,40 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity {
 
 
+
     private LinearLayout layout;
+
 
     private ProfileManager profileManager;
 
+
     private ArrayList<Profile> profiles;
+
+
+
 
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
+
         super.onCreate(savedInstanceState);
 
 
-        profileManager = new ProfileManager(this);
+
+        profileManager =
+                new ProfileManager(this);
+
 
 
         createLayout();
 
 
-        loadProfiles();
 
     }
+
+
 
 
 
@@ -47,15 +61,16 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
 
+
         super.onResume();
 
-        if(profileManager != null && layout != null) {
 
-            loadProfiles();
+        loadProfiles();
 
-        }
 
     }
+
+
 
 
 
@@ -65,7 +80,10 @@ public class MainActivity extends AppCompatActivity {
     private void createLayout() {
 
 
-        layout = new LinearLayout(this);
+
+        layout =
+                new LinearLayout(this);
+
 
 
         layout.setOrientation(
@@ -73,12 +91,15 @@ public class MainActivity extends AppCompatActivity {
         );
 
 
+
         layout.setPadding(
                 0,
                 150,
                 0,
-                0
+                20
         );
+
+
 
 
 
@@ -86,9 +107,11 @@ public class MainActivity extends AppCompatActivity {
                 new TextView(this);
 
 
+
         title.setText(
                 "SMB Random Picker"
         );
+
 
 
         title.setTextSize(26);
@@ -100,8 +123,12 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+
+
+
         Button add =
                 new Button(this);
+
 
 
         add.setText(
@@ -111,18 +138,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         add.setOnClickListener(
-                v -> {
-
-                    Intent intent =
-                            new Intent(
-                                    this,
-                                    AddProfileActivity.class
-                            );
-
-
-                    startActivity(intent);
-
-                }
+                v -> openAddProfile()
         );
 
 
@@ -131,9 +147,16 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+
+
         setContentView(layout);
 
+
+
     }
+
+
+
 
 
 
@@ -143,13 +166,18 @@ public class MainActivity extends AppCompatActivity {
     private void loadProfiles() {
 
 
+
         profiles =
                 profileManager.getProfiles();
 
 
+
         showProfiles();
 
+
+
     }
+
 
 
 
@@ -160,15 +188,17 @@ public class MainActivity extends AppCompatActivity {
     private void showProfiles() {
 
 
-        // odstraní starý seznam,
-        // aby se profily neduplikovaly po návratu
 
+        // smažeme staré karty
 
         while(layout.getChildCount() > 2) {
 
+
             layout.removeViewAt(2);
 
+
         }
+
 
 
 
@@ -176,28 +206,117 @@ public class MainActivity extends AppCompatActivity {
         for(Profile profile : profiles) {
 
 
-            TextView item =
-                    new TextView(this);
+
+            ProfileCard card =
+                    new ProfileCard(
+                            this,
+                            profile,
+                            this
+                    );
 
 
 
-            item.setText(
-                    "📁 "
-                    + profile.getName()
-            );
+            layout.addView(card);
 
 
-
-            item.setTextSize(20);
-
-
-
-            layout.addView(item);
 
         }
 
 
     }
+
+
+
+
+
+
+
+
+
+
+    private void openAddProfile() {
+
+
+
+        Intent intent =
+                new Intent(
+                        this,
+                        AddProfileActivity.class
+                );
+
+
+
+        startActivity(intent);
+
+
+
+    }
+
+
+
+
+
+
+
+
+
+    public void openSettings(Profile profile) {
+
+
+
+        Intent intent =
+                new Intent(
+                        this,
+                        AddProfileActivity.class
+                );
+
+
+
+        intent.putExtra(
+                "profileName",
+                profile.getName()
+        );
+
+
+
+        startActivity(intent);
+
+
+
+    }
+
+
+
+
+
+
+
+
+
+    public void deleteProfile(Profile profile) {
+
+
+
+        profileManager.deleteProfile(profile);
+
+
+
+        Toast.makeText(
+                this,
+                "Profil smazán",
+                Toast.LENGTH_SHORT
+        ).show();
+
+
+
+        loadProfiles();
+
+
+
+    }
+
+
+
 
 
 
