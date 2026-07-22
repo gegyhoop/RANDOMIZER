@@ -16,6 +16,10 @@
 
 
         <activity
+            android:name=".EpisodeActivity"
+            android:exported="false" />
+        
+        <activity
             android:name=".AddProfileActivity"
             android:exported="false" />
 
