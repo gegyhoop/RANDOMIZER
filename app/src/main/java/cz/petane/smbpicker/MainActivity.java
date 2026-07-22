@@ -33,7 +33,6 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -48,7 +47,6 @@ public class MainActivity extends AppCompatActivity {
 
 
         createLayout();
-
 
 
     }
@@ -71,6 +69,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     }
+
 
 
 
@@ -126,6 +125,7 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+
         Button add =
                 new Button(this);
 
@@ -162,6 +162,7 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+
     private void loadProfiles() {
 
 
@@ -174,6 +175,8 @@ public class MainActivity extends AppCompatActivity {
 
 
     }
+
+
 
 
 
@@ -197,7 +200,9 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+
         for(Profile profile : profiles) {
+
 
 
             ProfileCard card =
@@ -225,7 +230,9 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+
     private void openAddProfile() {
+
 
 
         Intent intent =
@@ -235,7 +242,9 @@ public class MainActivity extends AppCompatActivity {
                 );
 
 
+
         startActivity(intent);
+
 
 
     }
@@ -251,11 +260,13 @@ public class MainActivity extends AppCompatActivity {
     public void openSettings(Profile profile) {
 
 
+
         Intent intent =
                 new Intent(
                         this,
                         AddProfileActivity.class
                 );
+
 
 
         intent.putExtra(
@@ -264,7 +275,9 @@ public class MainActivity extends AppCompatActivity {
         );
 
 
+
         startActivity(intent);
+
 
 
     }
@@ -277,33 +290,27 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-   public void openEpisodes(Profile profile) {
+    public void openEpisodes(Profile profile) {
 
 
-    Intent intent =
-            new Intent(
-                    this,
-                    EpisodeActivity.class
-            );
+
+        Intent intent =
+                new Intent(
+                        this,
+                        EpisodeActivity.class
+                );
 
 
-    intent.putExtra(
-            "profileName",
-            profile.getName()
-    );
+
+        intent.putExtra(
+                "profileName",
+                profile.getName()
+        );
 
 
-    startActivity(intent);
 
+        startActivity(intent);
 
-}
-
-
-        Toast.makeText(
-                this,
-                "Přesun dílů: " + profile.getName(),
-                Toast.LENGTH_SHORT
-        ).show();
 
 
     }
@@ -317,6 +324,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     public void deleteProfile(Profile profile) {
+
 
 
         profileManager.deleteProfile(profile);
