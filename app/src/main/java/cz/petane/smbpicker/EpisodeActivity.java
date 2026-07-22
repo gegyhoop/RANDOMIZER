@@ -11,6 +11,8 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 
+import java.util.List;
+
 
 
 public class EpisodeActivity extends AppCompatActivity {
@@ -18,6 +20,12 @@ public class EpisodeActivity extends AppCompatActivity {
 
 
     private Profile profile;
+
+
+    private LinearLayout layout;
+
+
+    private TextView result;
 
 
 
@@ -47,7 +55,6 @@ public class EpisodeActivity extends AppCompatActivity {
 
 
 
-
         createLayout();
 
 
@@ -61,11 +68,12 @@ public class EpisodeActivity extends AppCompatActivity {
 
 
 
+
     private void createLayout(){
 
 
 
-        LinearLayout layout =
+        layout =
                 new LinearLayout(this);
 
 
@@ -95,7 +103,7 @@ public class EpisodeActivity extends AppCompatActivity {
 
         title.setText(
                 "Nové díly - "
-                + profile.getName()
+                        + profile.getName()
         );
 
 
@@ -120,11 +128,16 @@ public class EpisodeActivity extends AppCompatActivity {
         info.setText(
 
                 "Server:\n"
-                + profile.getServer()
-                + "\n\nZdroj:\n"
-                + profile.getSource()
-                + "\n\nCíl:\n"
-                + profile.getTarget()
+                        + profile.getServer()
+
+                        + "\n\nZdroj:\n"
+                        + profile.getSource()
+
+                        + "\n\nCíl:\n"
+                        + profile.getTarget()
+
+                        + "\n\nPočet:\n"
+                        + profile.getCount()
 
         );
 
@@ -138,13 +151,14 @@ public class EpisodeActivity extends AppCompatActivity {
 
 
 
+
         Button run =
                 new Button(this);
 
 
 
         run.setText(
-                "Přesunout nové díly"
+                "Najít nové díly"
         );
 
 
@@ -156,6 +170,26 @@ public class EpisodeActivity extends AppCompatActivity {
 
 
         layout.addView(run);
+
+
+
+
+
+
+
+        result =
+                new TextView(this);
+
+
+
+        result.setTextSize(18);
+
+
+
+        layout.addView(result);
+
+
+
 
 
 
@@ -178,12 +212,88 @@ public class EpisodeActivity extends AppCompatActivity {
 
 
 
-        Toast.makeText(
-                this,
-                "Zatím test - připravíme SMB",
-                Toast.LENGTH_LONG
-        ).show();
+        try {
 
+
+            EpisodePicker picker =
+                    new EpisodePicker(profile);
+
+
+
+            List<String> files =
+                    picker.getRandomFiles();
+
+
+
+
+            if(files.isEmpty()) {
+
+
+                result.setText(
+                        "Nenalezeny žádné soubory"
+                );
+
+
+                return;
+
+
+            }
+
+
+
+
+
+
+            StringBuilder text =
+                    new StringBuilder();
+
+
+
+            text.append(
+                    "Vybrané soubory:\n\n"
+            );
+
+
+
+
+            for(String file : files) {
+
+
+                text.append(
+                        file
+                );
+
+
+                text.append(
+                        "\n"
+                );
+
+
+            }
+
+
+
+
+            result.setText(
+                    text.toString()
+            );
+
+
+
+        }
+        catch(Exception e){
+
+
+
+            Toast.makeText(
+                    this,
+                    "Chyba: " + e.getMessage(),
+                    Toast.LENGTH_LONG
+            ).show();
+
+
+
+        }
 
 
     }
