@@ -18,6 +18,9 @@ public class ProfileCard extends LinearLayout {
     private MainActivity activity;
 
 
+    private TextView countText;
+
+
 
 
 
@@ -36,10 +39,10 @@ public class ProfileCard extends LinearLayout {
         this.activity = activity;
 
 
-
         create();
 
     }
+
 
 
 
@@ -58,9 +61,9 @@ public class ProfileCard extends LinearLayout {
 
         setPadding(
                 20,
+                25,
                 20,
-                20,
-                20
+                25
         );
 
 
@@ -114,6 +117,7 @@ public class ProfileCard extends LinearLayout {
 
 
 
+
         Button delete =
                 new Button(getContext());
 
@@ -136,7 +140,138 @@ public class ProfileCard extends LinearLayout {
 
 
 
+
         addView(header);
+
+
+
+
+
+
+
+
+
+        LinearLayout countLayout =
+                new LinearLayout(getContext());
+
+
+        countLayout.setOrientation(
+                HORIZONTAL
+        );
+
+
+        countLayout.setGravity(
+                Gravity.CENTER_VERTICAL
+        );
+
+
+
+
+
+
+        TextView label =
+                new TextView(getContext());
+
+
+        label.setText(
+                "Počet dílů:"
+        );
+
+
+        label.setTextSize(18);
+
+
+
+        countLayout.addView(label);
+
+
+
+
+
+
+
+        Button minus =
+                new Button(getContext());
+
+
+        minus.setText(
+                "▼"
+        );
+
+
+
+        minus.setOnClickListener(
+                v -> changeCount(-1)
+        );
+
+
+
+        countLayout.addView(minus);
+
+
+
+
+
+
+
+
+        countText =
+                new TextView(getContext());
+
+
+        countText.setText(
+                String.valueOf(
+                        profile.getCount()
+                )
+        );
+
+
+        countText.setTextSize(20);
+
+
+        countText.setGravity(
+                Gravity.CENTER
+        );
+
+
+        countLayout.addView(
+                countText,
+                new LayoutParams(
+                        80,
+                        LayoutParams.WRAP_CONTENT
+                )
+        );
+
+
+
+
+
+
+
+
+        Button plus =
+                new Button(getContext());
+
+
+        plus.setText(
+                "▲"
+        );
+
+
+        plus.setOnClickListener(
+                v -> changeCount(1)
+        );
+
+
+
+        countLayout.addView(plus);
+
+
+
+
+
+        addView(countLayout);
+
 
 
 
@@ -153,6 +288,7 @@ public class ProfileCard extends LinearLayout {
         buttons.setOrientation(
                 HORIZONTAL
         );
+
 
 
 
@@ -184,6 +320,8 @@ public class ProfileCard extends LinearLayout {
                         1
                 )
         );
+
+
 
 
 
@@ -226,6 +364,58 @@ public class ProfileCard extends LinearLayout {
 
 
     }
+
+
+
+
+
+
+
+
+
+    private void changeCount(int change){
+
+
+
+        int value =
+                profile.getCount();
+
+
+
+        value += change;
+
+
+
+        if(value < 1){
+
+            value = 1;
+
+        }
+
+
+
+        profile.setCount(value);
+
+
+
+        countText.setText(
+                String.valueOf(value)
+        );
+
+
+
+
+        ProfileManager manager =
+                new ProfileManager(getContext());
+
+
+
+        manager.updateProfile(profile);
+
+
+
+    }
+
 
 
 }
