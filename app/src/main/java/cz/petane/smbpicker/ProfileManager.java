@@ -16,12 +16,10 @@ public class ProfileManager {
 
     private static final String PREF = "profiles";
 
-
     private static final String KEY = "data";
 
 
     private final Context context;
-
 
 
 
@@ -54,7 +52,6 @@ public class ProfileManager {
                 return new ArrayList<>();
 
             }
-
 
 
 
@@ -96,10 +93,7 @@ public class ProfileManager {
 
 
 
-    public void saveProfiles(
-            ArrayList<Profile> profiles
-    ) {
-
+    public void saveProfiles(ArrayList<Profile> profiles) {
 
 
         String json =
@@ -123,11 +117,7 @@ public class ProfileManager {
 
 
 
-
-    public Profile getProfileById(
-            String id
-    ) {
-
+    public Profile getProfileById(String id) {
 
 
         ArrayList<Profile> profiles =
@@ -138,10 +128,8 @@ public class ProfileManager {
         for(Profile profile : profiles) {
 
 
-
             if(profile.getName() != null &&
                     profile.getName().equals(id)) {
-
 
 
                 return profile;
@@ -167,10 +155,7 @@ public class ProfileManager {
 
 
 
-    public void updateProfile(
-            Profile profile
-    ) {
-
+    public void updateProfile(Profile profile) {
 
 
         ArrayList<Profile> profiles =
@@ -182,9 +167,7 @@ public class ProfileManager {
 
 
 
-
         for(int i = 0; i < profiles.size(); i++) {
-
 
 
             Profile old =
@@ -192,10 +175,8 @@ public class ProfileManager {
 
 
 
-
             if(old.getName() != null &&
                     old.getName().equals(profile.getName())) {
-
 
 
                 profiles.set(i, profile);
@@ -215,7 +196,6 @@ public class ProfileManager {
 
 
 
-
         if(!updated) {
 
 
@@ -226,7 +206,6 @@ public class ProfileManager {
 
 
 
-
         saveProfiles(profiles);
 
 
@@ -239,10 +218,9 @@ public class ProfileManager {
 
 
 
-    public void deleteProfile(
-            Profile profile
-    ) {
 
+
+    public void deleteProfile(Profile profile) {
 
 
         ArrayList<Profile> profiles =
@@ -250,14 +228,34 @@ public class ProfileManager {
 
 
 
-        profiles.remove(profile);
+        for(int i = profiles.size() - 1; i >= 0; i--) {
+
+
+            Profile item =
+                    profiles.get(i);
+
+
+
+            if(item.getName() != null &&
+                    item.getName().equals(profile.getName())) {
+
+
+                profiles.remove(i);
+
+
+            }
+
+
+        }
 
 
 
         saveProfiles(profiles);
 
 
+
     }
+
 
 
 }
