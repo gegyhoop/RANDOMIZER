@@ -1,75 +1,87 @@
 package cz.petane.smbpicker;
 
-
 import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
 import android.view.Gravity;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-
-
 public class ProfileCard extends LinearLayout {
 
-
     private Profile profile;
-
-
     private MainActivity activity;
-
-
     private TextView countText;
-
-
-
-
 
     public ProfileCard(
             android.content.Context context,
             Profile profile,
             MainActivity activity
     ) {
-
-
         super(context);
 
-
         this.profile = profile;
-
         this.activity = activity;
 
-
         create();
-
     }
-
-
-
-
-
-
-
 
 
     private void create() {
 
-
-        setOrientation(
-                VERTICAL
-        );
-
+        setOrientation(VERTICAL);
 
         setPadding(
-                20,
                 25,
-                20,
+                25,
+                25,
                 25
         );
 
 
-        setBackgroundColor(
-                Color.LTGRAY
+        GradientDrawable background =
+                new GradientDrawable();
+
+
+        background.setColor(
+                getResources()
+                        .getColor(
+                                android.R.color.background_dark
+                        )
         );
+
+
+        background.setStroke(
+                2,
+                Color.GRAY
+        );
+
+
+        background.setCornerRadius(
+                25
+        );
+
+
+        setBackground(background);
+
+
+        ViewGroup.MarginLayoutParams params =
+                new ViewGroup.MarginLayoutParams(
+                        LayoutParams.MATCH_PARENT,
+                        LayoutParams.WRAP_CONTENT
+                );
+
+
+        params.setMargins(
+                20,
+                15,
+                20,
+                15
+        );
+
+
+        setLayoutParams(params);
 
 
 
@@ -77,9 +89,7 @@ public class ProfileCard extends LinearLayout {
                 new LinearLayout(getContext());
 
 
-        header.setOrientation(
-                HORIZONTAL
-        );
+        header.setOrientation(HORIZONTAL);
 
 
         header.setGravity(
@@ -87,12 +97,8 @@ public class ProfileCard extends LinearLayout {
         );
 
 
-
-
-
         TextView title =
                 new TextView(getContext());
-
 
 
         title.setText(
@@ -102,6 +108,13 @@ public class ProfileCard extends LinearLayout {
 
         title.setTextSize(22);
 
+
+        title.setTextColor(
+                getResources()
+                        .getColor(
+                                android.R.color.primary_text_dark
+                        )
+        );
 
 
         header.addView(
@@ -115,12 +128,8 @@ public class ProfileCard extends LinearLayout {
 
 
 
-
-
-
         Button delete =
                 new Button(getContext());
-
 
 
         delete.setText(
@@ -128,25 +137,15 @@ public class ProfileCard extends LinearLayout {
         );
 
 
-
         delete.setOnClickListener(
                 v -> activity.deleteProfile(profile)
         );
 
 
-
         header.addView(delete);
 
 
-
-
-
         addView(header);
-
-
-
-
-
 
 
 
@@ -166,9 +165,6 @@ public class ProfileCard extends LinearLayout {
 
 
 
-
-
-
         TextView label =
                 new TextView(getContext());
 
@@ -181,12 +177,7 @@ public class ProfileCard extends LinearLayout {
         label.setTextSize(18);
 
 
-
         countLayout.addView(label);
-
-
-
-
 
 
 
@@ -199,18 +190,12 @@ public class ProfileCard extends LinearLayout {
         );
 
 
-
         minus.setOnClickListener(
                 v -> changeCount(-1)
         );
 
 
-
         countLayout.addView(minus);
-
-
-
-
 
 
 
@@ -244,11 +229,6 @@ public class ProfileCard extends LinearLayout {
 
 
 
-
-
-
-
-
         Button plus =
                 new Button(getContext());
 
@@ -263,19 +243,10 @@ public class ProfileCard extends LinearLayout {
         );
 
 
-
         countLayout.addView(plus);
 
 
-
-
-
         addView(countLayout);
-
-
-
-
-
 
 
 
@@ -284,13 +255,9 @@ public class ProfileCard extends LinearLayout {
                 new LinearLayout(getContext());
 
 
-
         buttons.setOrientation(
                 HORIZONTAL
         );
-
-
-
 
 
 
@@ -298,18 +265,14 @@ public class ProfileCard extends LinearLayout {
                 new Button(getContext());
 
 
-
         episodes.setText(
                 "Nové díly"
         );
 
 
-
         episodes.setOnClickListener(
                 v -> activity.openEpisodes(profile)
         );
-
-
 
 
         buttons.addView(
@@ -323,15 +286,8 @@ public class ProfileCard extends LinearLayout {
 
 
 
-
-
-
-
-
-
         Button settings =
                 new Button(getContext());
-
 
 
         settings.setText(
@@ -339,11 +295,9 @@ public class ProfileCard extends LinearLayout {
         );
 
 
-
         settings.setOnClickListener(
                 v -> activity.openSettings(profile)
         );
-
 
 
         buttons.addView(
@@ -356,46 +310,31 @@ public class ProfileCard extends LinearLayout {
         );
 
 
-
-
-
         addView(buttons);
-
-
 
     }
 
 
 
 
-
-
-
-
-
-    private void changeCount(int change){
-
+    private void changeCount(int change) {
 
 
         int value =
                 profile.getCount();
 
 
-
         value += change;
 
 
-
-        if(value < 1){
+        if(value < 1) {
 
             value = 1;
 
         }
 
 
-
         profile.setCount(value);
-
 
 
         countText.setText(
@@ -403,19 +342,12 @@ public class ProfileCard extends LinearLayout {
         );
 
 
-
-
         ProfileManager manager =
                 new ProfileManager(getContext());
 
 
-
         manager.updateProfile(profile);
 
-
-
     }
-
-
 
 }
