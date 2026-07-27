@@ -209,4 +209,196 @@ public class AddProfileActivity extends AppCompatActivity {
                             updateTimeText();
 
                         },
-                        update
+                        updateHour,
+                        updateMinute,
+                        true
+                );
+
+        dialog.show();
+    }
+
+
+    private void loadExistingProfile() {
+
+        String profileName =
+                getIntent()
+                        .getStringExtra("profileName");
+
+        if(profileName == null) {
+            return;
+        }
+
+
+        editingProfile =
+                profileManager.getProfileById(profileName);
+
+
+        if(editingProfile.getName() != null) {
+
+            name.setText(editingProfile.getName());
+            server.setText(editingProfile.getServer());
+            username.setText(editingProfile.getUsername());
+            password.setText(editingProfile.getPassword());
+            source.setText(editingProfile.getSource());
+            target.setText(editingProfile.getTarget());
+
+            count.setText(
+                    String.valueOf(
+                            editingProfile.getCount()
+                    )
+            );
+
+            anonymous.setChecked(
+                    editingProfile.isAnonymous()
+            );
+
+            autoUpdate.setChecked(
+                    editingProfile.isAutoUpdate()
+            );
+
+            updateHour =
+                    editingProfile.getUpdateHour();
+
+            updateMinute =
+                    editingProfile.getUpdateMinute();
+
+            updateTimeText();
+        }
+    }
+
+
+    private void testConnection() {
+
+        Profile testProfile =
+                new Profile();
+
+        testProfile.setServer(
+                server.getText().toString()
+        );
+
+        testProfile.setSource(
+                source.getText().toString()
+        );
+
+        testProfile.setTarget(
+                target.getText().toString()
+        );
+
+        testProfile.setAnonymous(
+                anonymous.isChecked()
+        );
+
+        testProfile.setUsername(
+                username.getText().toString()
+        );
+
+        testProfile.setPassword(
+                password.getText().toString()
+        );
+
+
+        new Thread(() -> {
+
+            SmbManager smb =
+                    new SmbManager(testProfile);
+
+            boolean result =
+                    smb.testConnection();
+
+
+            runOnUiThread(() -> {
+
+                Toast.makeText(
+                        this,
+                        result ?
+                                "Připojení OK" :
+                                "Připojení selhalo",
+                        Toast.LENGTH_LONG
+                ).show();
+
+            });
+
+        }).start();
+    }
+
+
+    private void saveProfile() {
+
+        if(editingProfile == null) {
+
+            editingProfile =
+                    new Profile();
+        }
+
+
+        editingProfile.setName(
+                name.getText().toString()
+        );
+
+        editingProfile.setServer(
+                server.getText().toString()
+        );
+
+        editingProfile.setUsername(
+                username.getText().toString()
+        );
+
+        editingProfile.setPassword(
+                password.getText().toString()
+        );
+
+        editingProfile.setSource(
+                source.getText().toString()
+        );
+
+        editingProfile.setTarget(
+                target.getText().toString()
+        );
+
+        editingProfile.setAnonymous(
+                anonymous.isChecked()
+        );
+
+        editingProfile.setAutoUpdate(
+                autoUpdate.isChecked()
+        );
+
+        editingProfile.setUpdateHour(
+                updateHour
+        );
+
+        editingProfile.setUpdateMinute(
+                updateMinute
+        );
+
+
+        try {
+
+            editingProfile.setCount(
+                    Integer.parseInt(
+                            count.getText().toString()
+                    )
+            );
+
+        }
+        catch(Exception e) {
+
+            editingProfile.setCount(1);
+        }
+
+
+        profileManager.updateProfile(
+                editingProfile
+        );
+
+
+        Scheduler.schedule(
+                this,
+                editingProfile
+        );
+
+
+        finish();
+    }
+
+}
