@@ -17,6 +17,7 @@ public class AutoUpdateWorker extends Worker {
         super(context, params);
     }
 
+
     @NonNull
     @Override
     public Result doWork() {
@@ -24,46 +25,69 @@ public class AutoUpdateWorker extends Worker {
         try {
 
             String profileName =
-                    getInputData().getString("profileName");
+                    getInputData()
+                            .getString("profileName");
 
-            if (profileName == null) {
+
+            if(profileName == null) {
                 return Result.failure();
             }
+
 
             ProfileManager manager =
-                    new ProfileManager(getApplicationContext());
+                    new ProfileManager(
+                            getApplicationContext()
+                    );
+
 
             Profile profile =
-                    manager.getProfileById(profileName);
+                    manager.getProfileById(
+                            profileName
+                    );
 
-            if (profile.getName() == null) {
+
+            if(profile.getName() == null) {
                 return Result.failure();
             }
+
 
             EpisodePicker picker =
                     new EpisodePicker(profile);
 
+
             List<String> files =
                     picker.prepareEpisodes();
 
-            if (files.isEmpty()) {
-                return Result.retry();
+
+
+            if(!files.isEmpty()) {
+
+                NotificationHelper.showNotification(
+                        getApplicationContext(),
+                        profile.getName(),
+                        files
+                );
+
             }
 
-            NotificationHelper.showNotification(
+
+            Scheduler.schedule(
                     getApplicationContext(),
-                    profile.getName(),
-                    files
+                    profile
             );
+
 
             return Result.success();
 
-        } catch (Exception e) {
+
+        } catch(Exception e) {
 
             e.printStackTrace();
 
             return Result.retry();
+
         }
+
     }
 
 }
