@@ -223,8 +223,8 @@ public class MainActivity extends AppCompatActivity {
         ).show();
 
         loadProfiles();
-
-            private void exportProfiles() {
+    }
+    private void exportProfiles() {
 
         Intent intent =
                 new Intent(
@@ -424,5 +424,4 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
-    }
-    }
+}
