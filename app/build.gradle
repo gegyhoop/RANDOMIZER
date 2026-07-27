@@ -9,6 +9,7 @@ android {
 
     defaultConfig {
         applicationId "cz.petane.smbpicker"
+
         minSdk 26
         targetSdk 35
 
@@ -26,4 +27,7 @@ dependencies {
     implementation 'eu.agno3.jcifs:jcifs-ng:2.1.10'
 
     implementation 'com.google.code.gson:gson:2.10.1'
+
+    implementation 'androidx.work:work-runtime:2.9.0'
+
 }
