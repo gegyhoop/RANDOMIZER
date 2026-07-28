@@ -30,7 +30,9 @@ public class AutoUpdateWorker extends Worker {
 
 
             if(profileName == null) {
+
                 return Result.failure();
+
             }
 
 
@@ -47,7 +49,9 @@ public class AutoUpdateWorker extends Worker {
 
 
             if(profile.getName() == null) {
+
                 return Result.failure();
+
             }
 
 
@@ -71,6 +75,8 @@ public class AutoUpdateWorker extends Worker {
             }
 
 
+
+            // naplánovat pouze další jednu aktualizaci
             Scheduler.schedule(
                     getApplicationContext(),
                     profile
@@ -80,14 +86,13 @@ public class AutoUpdateWorker extends Worker {
             return Result.success();
 
 
-        } catch(Exception e) {
+        }
+        catch(Exception e) {
 
             e.printStackTrace();
 
             return Result.retry();
 
         }
-
     }
-
 }
