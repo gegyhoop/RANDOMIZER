@@ -1,10 +1,8 @@
 package cz.petane.smbpicker;
 
-import android.Manifest;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.os.Build;
 
 import androidx.core.app.NotificationCompat;
@@ -42,8 +40,9 @@ public class NotificationHelper {
 
             if(manager != null) {
 
-                manager.createNotificationChannel(channel);
-
+                manager.createNotificationChannel(
+                        channel
+                );
             }
         }
     }
@@ -56,18 +55,6 @@ public class NotificationHelper {
             List<String> files
     ) {
 
-
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-
-            if(context.checkSelfPermission(
-                    Manifest.permission.POST_NOTIFICATIONS
-            ) != PackageManager.PERMISSION_GRANTED) {
-
-                return;
-            }
-        }
-
-
         createChannel(context);
 
 
@@ -75,11 +62,20 @@ public class NotificationHelper {
                 new StringBuilder();
 
 
-        for(String file : files) {
+        if(files != null && !files.isEmpty()) {
 
-            text.append("• ")
-                    .append(file)
-                    .append("\n");
+            for(String file : files) {
+
+                text.append("• ")
+                        .append(file)
+                        .append("\n");
+            }
+
+        } else {
+
+            text.append(
+                    "Žádné nové díly"
+            );
         }
 
 
@@ -102,9 +98,9 @@ public class NotificationHelper {
 
 
         builder.setContentText(
-                "Profil "
-                        + profileName
-                        + " byl aktualizován"
+                "Profil " +
+                        profileName +
+                        " byl aktualizován"
         );
 
 
@@ -127,10 +123,19 @@ public class NotificationHelper {
 
 
 
-        NotificationManagerCompat.from(context)
-                .notify(
-                        profileName.hashCode(),
-                        builder.build()
-                );
+        try {
+
+            NotificationManagerCompat.from(context)
+                    .notify(
+                            profileName.hashCode(),
+                            builder.build()
+                    );
+
+        }
+        catch(SecurityException e) {
+
+            e.printStackTrace();
+
+        }
     }
 }
