@@ -11,8 +11,6 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import java.util.Calendar;
-
 public class AddProfileActivity extends AppCompatActivity {
 
     private EditText name;
@@ -34,20 +32,16 @@ public class AddProfileActivity extends AppCompatActivity {
     private ProfileManager profileManager;
     private Profile editingProfile;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
 
-        profileManager =
-                new ProfileManager(this);
+        profileManager = new ProfileManager(this);
 
         createLayout();
 
         loadExistingProfile();
     }
-
 
     private EditText addField(
             LinearLayout layout,
@@ -71,7 +65,6 @@ public class AddProfileActivity extends AppCompatActivity {
         return field;
     }
 
-
     private void createLayout() {
 
         LinearLayout layout =
@@ -88,7 +81,6 @@ public class AddProfileActivity extends AppCompatActivity {
                 20
         );
 
-
         TextView title =
                 new TextView(this);
 
@@ -100,23 +92,15 @@ public class AddProfileActivity extends AppCompatActivity {
 
         layout.addView(title);
 
-
         name = addField(layout,"Název");
-
         server = addField(layout,"SMB server");
-
         username = addField(layout,"Uživatel");
-
         password = addField(layout,"Heslo");
-
         source = addField(layout,"Zdrojová složka");
-
         target = addField(layout,"Cílová složka");
-
         count = addField(layout,"Počet souborů");
 
         count.setText("1");
-
 
         anonymous =
                 new CheckBox(this);
@@ -129,7 +113,6 @@ public class AddProfileActivity extends AppCompatActivity {
 
         layout.addView(anonymous);
 
-
         autoUpdate =
                 new CheckBox(this);
 
@@ -138,7 +121,6 @@ public class AddProfileActivity extends AppCompatActivity {
         );
 
         layout.addView(autoUpdate);
-
 
         timeButton =
                 new Button(this);
@@ -150,7 +132,6 @@ public class AddProfileActivity extends AppCompatActivity {
         );
 
         layout.addView(timeButton);
-
 
         Button test =
                 new Button(this);
@@ -165,7 +146,6 @@ public class AddProfileActivity extends AppCompatActivity {
 
         layout.addView(test);
 
-
         Button save =
                 new Button(this);
 
@@ -179,10 +159,8 @@ public class AddProfileActivity extends AppCompatActivity {
 
         layout.addView(save);
 
-
         setContentView(layout);
     }
-
 
     private void updateTimeText() {
 
@@ -194,7 +172,6 @@ public class AddProfileActivity extends AppCompatActivity {
                 )
         );
     }
-
 
     private void showTimePicker() {
 
@@ -217,7 +194,6 @@ public class AddProfileActivity extends AppCompatActivity {
         dialog.show();
     }
 
-
     private void loadExistingProfile() {
 
         String profileName =
@@ -228,10 +204,8 @@ public class AddProfileActivity extends AppCompatActivity {
             return;
         }
 
-
         editingProfile =
                 profileManager.getProfileById(profileName);
-
 
         if(editingProfile.getName() != null) {
 
@@ -266,7 +240,6 @@ public class AddProfileActivity extends AppCompatActivity {
         }
     }
 
-
     private void testConnection() {
 
         Profile testProfile =
@@ -296,7 +269,6 @@ public class AddProfileActivity extends AppCompatActivity {
                 password.getText().toString()
         );
 
-
         new Thread(() -> {
 
             SmbManager smb =
@@ -304,7 +276,6 @@ public class AddProfileActivity extends AppCompatActivity {
 
             boolean result =
                     smb.testConnection();
-
 
             runOnUiThread(() -> {
 
@@ -321,7 +292,6 @@ public class AddProfileActivity extends AppCompatActivity {
         }).start();
     }
 
-
     private void saveProfile() {
 
         if(editingProfile == null) {
@@ -329,7 +299,6 @@ public class AddProfileActivity extends AppCompatActivity {
             editingProfile =
                     new Profile();
         }
-
 
         editingProfile.setName(
                 name.getText().toString()
@@ -371,7 +340,6 @@ public class AddProfileActivity extends AppCompatActivity {
                 updateMinute
         );
 
-
         try {
 
             editingProfile.setCount(
@@ -380,25 +348,30 @@ public class AddProfileActivity extends AppCompatActivity {
                     )
             );
 
-        }
-        catch(Exception e) {
+        } catch(Exception e) {
 
             editingProfile.setCount(1);
         }
-
 
         profileManager.updateProfile(
                 editingProfile
         );
 
+        if(editingProfile.isAutoUpdate()) {
 
-        Scheduler.schedule(
-                this,
-                editingProfile
-        );
+            Scheduler.schedule(
+                    this,
+                    editingProfile
+            );
 
+        } else {
+
+            Scheduler.cancel(
+                    this,
+                    editingProfile
+            );
+        }
 
         finish();
     }
-
 }
