@@ -3,6 +3,7 @@ package cz.petane.smbpicker;
 import android.content.Context;
 
 import androidx.work.Data;
+import androidx.work.ExistingWorkPolicy;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
 
@@ -12,21 +13,22 @@ import java.util.concurrent.TimeUnit;
 
 public class Scheduler {
 
+    private static String getWorkName(Profile profile) {
+        return "AUTO_UPDATE_" + profile.getName();
+    }
+
     public static void schedule(
             Context context,
             Profile profile
     ) {
 
-        cancel(context, profile);
-
         if(!profile.isAutoUpdate()) {
+            cancel(context, profile);
             return;
         }
 
-
         LocalDateTime now =
                 LocalDateTime.now();
-
 
         LocalDateTime next =
                 now.withHour(
@@ -38,21 +40,15 @@ public class Scheduler {
                 .withSecond(0)
                 .withNano(0);
 
-
-        if(next.isBefore(now)) {
-
+        if(!next.isAfter(now)) {
             next = next.plusDays(1);
-
         }
-
 
         long delay =
                 Duration.between(
                         now,
                         next
                 ).toMinutes();
-
-
 
         Data data =
                 new Data.Builder()
@@ -61,8 +57,6 @@ public class Scheduler {
                                 profile.getName()
                         )
                         .build();
-
-
 
         OneTimeWorkRequest request =
                 new OneTimeWorkRequest.Builder(
@@ -75,14 +69,13 @@ public class Scheduler {
                 .setInputData(data)
                 .build();
 
-
-
         WorkManager.getInstance(context)
-                .enqueue(request);
-
+                .enqueueUniqueWork(
+                        getWorkName(profile),
+                        ExistingWorkPolicy.REPLACE,
+                        request
+                );
     }
-
-
 
     public static void cancel(
             Context context,
@@ -90,10 +83,8 @@ public class Scheduler {
     ) {
 
         WorkManager.getInstance(context)
-                .cancelAllWorkByTag(
-                        profile.getName()
+                .cancelUniqueWork(
+                        getWorkName(profile)
                 );
-
     }
-
 }
