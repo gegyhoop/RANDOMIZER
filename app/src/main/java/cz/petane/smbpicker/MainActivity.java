@@ -30,15 +30,20 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
 
-        profileManager = new ProfileManager(this);
+        profileManager =
+                new ProfileManager(this);
 
         createLayout();
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            if (checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS)
-                    != PackageManager.PERMISSION_GRANTED) {
+
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+
+            if(checkSelfPermission(
+                    Manifest.permission.POST_NOTIFICATIONS
+            ) != PackageManager.PERMISSION_GRANTED) {
 
                 requestPermissions(
                         new String[]{
@@ -50,16 +55,21 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+
     @Override
     protected void onResume() {
+
         super.onResume();
+
         loadProfiles();
     }
+
 
     private void createLayout() {
 
         ScrollView scrollView =
                 new ScrollView(this);
+
 
         layout =
                 new LinearLayout(this);
@@ -75,6 +85,7 @@ public class MainActivity extends AppCompatActivity {
                 20
         );
 
+
         TextView title =
                 new TextView(this);
 
@@ -85,6 +96,7 @@ public class MainActivity extends AppCompatActivity {
         title.setTextSize(26);
 
         layout.addView(title);
+
 
         Button add =
                 new Button(this);
@@ -99,36 +111,30 @@ public class MainActivity extends AppCompatActivity {
 
         layout.addView(add);
 
+
         scrollView.addView(layout);
 
         setContentView(scrollView);
     }
+
 
     private void loadProfiles() {
 
         profiles =
                 profileManager.getProfiles();
 
-        for(Profile profile : profiles) {
-
-            if(profile.isAutoUpdate()) {
-
-                Scheduler.schedule(
-                        this,
-                        profile
-                );
-            }
-        }
-
         showProfiles();
     }
+
 
     private void showProfiles() {
 
         while(layout.getChildCount() > 2) {
 
             layout.removeViewAt(2);
+
         }
+
 
         for(Profile profile : profiles) {
 
@@ -142,6 +148,7 @@ public class MainActivity extends AppCompatActivity {
             layout.addView(card);
         }
 
+
         Button export =
                 new Button(this);
 
@@ -154,6 +161,8 @@ public class MainActivity extends AppCompatActivity {
         );
 
         layout.addView(export);
+
+
 
         Button importButton =
                 new Button(this);
@@ -169,6 +178,7 @@ public class MainActivity extends AppCompatActivity {
         layout.addView(importButton);
     }
 
+
     private void openAddProfile() {
 
         Intent intent =
@@ -179,6 +189,7 @@ public class MainActivity extends AppCompatActivity {
 
         startActivity(intent);
     }
+
 
     public void openSettings(Profile profile) {
 
@@ -196,6 +207,7 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+
     public void openEpisodes(Profile profile) {
 
         Intent intent =
@@ -212,9 +224,17 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+
     public void deleteProfile(Profile profile) {
 
+        Scheduler.cancel(
+                this,
+                profile
+        );
+
+
         profileManager.deleteProfile(profile);
+
 
         Toast.makeText(
                 this,
@@ -222,8 +242,11 @@ public class MainActivity extends AppCompatActivity {
                 Toast.LENGTH_SHORT
         ).show();
 
+
         loadProfiles();
     }
+
+
     private void exportProfiles() {
 
         Intent intent =
@@ -231,20 +254,24 @@ public class MainActivity extends AppCompatActivity {
                         Intent.ACTION_CREATE_DOCUMENT
                 );
 
+
         intent.setType(
                 "application/json"
         );
+
 
         intent.putExtra(
                 Intent.EXTRA_TITLE,
                 "SMB_Random_Picker_backup.json"
         );
 
+
         startActivityForResult(
                 intent,
                 EXPORT_FILE
         );
     }
+
 
     private void importProfiles() {
 
@@ -253,19 +280,23 @@ public class MainActivity extends AppCompatActivity {
                         Intent.ACTION_OPEN_DOCUMENT
                 );
 
+
         intent.setType(
                 "application/json"
         );
 
+
         intent.addCategory(
                 Intent.CATEGORY_OPENABLE
         );
+
 
         startActivityForResult(
                 intent,
                 IMPORT_FILE
         );
     }
+
 
     @Override
     protected void onActivityResult(
@@ -280,36 +311,47 @@ public class MainActivity extends AppCompatActivity {
                 data
         );
 
+
         if(resultCode != RESULT_OK || data == null) {
+
             return;
         }
+
 
         try {
 
             Uri uri =
                     data.getData();
 
+
             if(requestCode == EXPORT_FILE) {
+
 
                 BackupManager backup =
                         new BackupManager(this);
 
+
                 File temp =
                         backup.exportProfiles();
 
+
                 FileInputStream input =
                         new FileInputStream(temp);
+
 
                 OutputStream output =
                         getContentResolver()
                                 .openOutputStream(uri);
 
+
                 byte[] buffer =
                         new byte[4096];
 
+
                 int length;
 
-                while((length=input.read(buffer))>0) {
+
+                while((length = input.read(buffer)) > 0) {
 
                     output.write(
                             buffer,
@@ -318,9 +360,11 @@ public class MainActivity extends AppCompatActivity {
                     );
                 }
 
+
                 input.close();
 
                 output.close();
+
 
                 Toast.makeText(
                         this,
@@ -329,7 +373,10 @@ public class MainActivity extends AppCompatActivity {
                 ).show();
             }
 
+
+
             if(requestCode == IMPORT_FILE) {
+
 
                 File temp =
                         new File(
@@ -337,20 +384,25 @@ public class MainActivity extends AppCompatActivity {
                                 "import.json"
                         );
 
+
                 FileInputStream input =
                         (FileInputStream)
                                 getContentResolver()
                                         .openInputStream(uri);
 
+
                 OutputStream output =
                         new java.io.FileOutputStream(temp);
+
 
                 byte[] buffer =
                         new byte[4096];
 
+
                 int length;
 
-                while((length=input.read(buffer))>0) {
+
+                while((length = input.read(buffer)) > 0) {
 
                     output.write(
                             buffer,
@@ -359,20 +411,42 @@ public class MainActivity extends AppCompatActivity {
                     );
                 }
 
+
                 input.close();
 
                 output.close();
 
+
+
                 BackupManager backup =
                         new BackupManager(this);
 
+
                 backup.importProfiles(temp);
+
+
+                ArrayList<Profile> imported =
+                        profileManager.getProfiles();
+
+
+                for(Profile profile : imported) {
+
+                    if(profile.isAutoUpdate()) {
+
+                        Scheduler.schedule(
+                                this,
+                                profile
+                        );
+                    }
+                }
+
 
                 Toast.makeText(
                         this,
                         "Import hotový",
                         Toast.LENGTH_LONG
                 ).show();
+
 
                 loadProfiles();
             }
@@ -386,9 +460,11 @@ public class MainActivity extends AppCompatActivity {
                     Toast.LENGTH_LONG
             ).show();
 
+
             e.printStackTrace();
         }
     }
+
 
     @Override
     public void onRequestPermissionsResult(
@@ -402,6 +478,7 @@ public class MainActivity extends AppCompatActivity {
                 permissions,
                 grantResults
         );
+
 
         if(requestCode == 100) {
 
