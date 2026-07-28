@@ -14,28 +14,26 @@ public class BootReceiver extends BroadcastReceiver {
             Intent intent
     ) {
 
-        if (!Intent.ACTION_BOOT_COMPLETED.equals(intent.getAction())) {
-            return;
-        }
+        if(Intent.ACTION_BOOT_COMPLETED.equals(intent.getAction())) {
 
-        ProfileManager manager =
-                new ProfileManager(context);
+            ProfileManager manager =
+                    new ProfileManager(context);
 
-        ArrayList<Profile> profiles =
-                manager.getProfiles();
 
-        for (Profile profile : profiles) {
+            ArrayList<Profile> profiles =
+                    manager.getProfiles();
 
-            if (profile.isAutoUpdate()) {
 
-                Scheduler.schedule(
-                        context,
-                        profile
-                );
+            for(Profile profile : profiles) {
 
+                if(profile.isAutoUpdate()) {
+
+                    Scheduler.schedule(
+                            context,
+                            profile
+                    );
+                }
             }
-
         }
     }
-
 }
