@@ -1,15 +1,12 @@
 package cz.petane.smbpicker;
 
 import android.content.Context;
-
 import androidx.annotation.NonNull;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
-
 import java.util.List;
 
 public class AutoUpdateWorker extends Worker {
-
     public AutoUpdateWorker(
             @NonNull Context context,
             @NonNull WorkerParameters params
@@ -17,82 +14,63 @@ public class AutoUpdateWorker extends Worker {
         super(context, params);
     }
 
-
     @NonNull
     @Override
     public Result doWork() {
-
         try {
-
             String profileName =
-                    getInputData()
-                            .getString("profileName");
+                    getInputData().getString("profileName");
 
+            boolean manualUpdate =
+                    getInputData().getBoolean("manualUpdate",false);
+
+            boolean lastManualUpdate =
+                    getInputData().getBoolean("lastManualUpdate",false);
 
             if(profileName == null) {
-
                 return Result.failure();
-
             }
-
 
             ProfileManager manager =
-                    new ProfileManager(
-                            getApplicationContext()
-                    );
-
+                    new ProfileManager(getApplicationContext());
 
             Profile profile =
-                    manager.getProfileById(
-                            profileName
-                    );
+                    manager.getProfileById(profileName);
 
-
-            if(profile.getName() == null) {
-
+            if(profile == null || profile.getName() == null) {
                 return Result.failure();
-
             }
-
 
             EpisodePicker picker =
                     new EpisodePicker(profile);
 
-
             List<String> files =
                     picker.prepareEpisodes();
 
+            if(!manualUpdate) {
+                if(!files.isEmpty()) {
+                    NotificationHelper.showNotification(
+                            getApplicationContext(),
+                            profile.getName(),
+                            files
+                    );
+                }
 
-
-            if(!files.isEmpty()) {
-
-                NotificationHelper.showNotification(
+                Scheduler.schedule(
                         getApplicationContext(),
-                        profile.getName(),
-                        files
+                        profile
                 );
-
+            } else if(lastManualUpdate) {
+                NotificationHelper.showManualUpdateNotification(
+                        getApplicationContext()
+                );
             }
 
-
-
-            // naplánovat pouze další jednu aktualizaci
-            Scheduler.schedule(
-                    getApplicationContext(),
-                    profile
-            );
-
-
             return Result.success();
-
-
         }
         catch(Exception e) {
-
             e.printStackTrace();
-
             return Result.retry();
-
         }
     }
 }
