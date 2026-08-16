@@ -11,6 +11,7 @@ import androidx.work.WorkManager;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 public class Scheduler {
@@ -70,10 +71,6 @@ public class Scheduler {
                                 "manualUpdate",
                                 false
                         )
-                        .putBoolean(
-                                "lastManualUpdate",
-                                false
-                        )
                         .build();
 
         OneTimeWorkRequest request =
@@ -113,6 +110,28 @@ public class Scheduler {
                 MANUAL_UPDATE_ALL
         );
 
+        String updateId =
+                UUID.randomUUID().toString();
+
+        Context appContext =
+                context.getApplicationContext();
+
+        appContext
+                .getSharedPreferences(
+                        "manual_update",
+                        Context.MODE_PRIVATE
+                )
+                .edit()
+                .putString(
+                        "current_update_id",
+                        updateId
+                )
+                .putStringSet(
+                        "updated_files_" + updateId,
+                        new java.util.LinkedHashSet<>()
+                )
+                .apply();
+
         WorkContinuation continuation = null;
 
         for(int i = 0;
@@ -138,6 +157,10 @@ public class Scheduler {
                             .putBoolean(
                                     "lastManualUpdate",
                                     last
+                            )
+                            .putString(
+                                    "manualUpdateId",
+                                    updateId
                             )
                             .build();
 
@@ -165,7 +188,6 @@ public class Scheduler {
         }
 
         if(continuation != null) {
-
             continuation.enqueue();
         }
     }
