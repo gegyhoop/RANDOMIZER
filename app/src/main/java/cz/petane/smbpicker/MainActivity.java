@@ -12,31 +12,38 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
+
     private LinearLayout layout;
     private ProfileManager profileManager;
     private ArrayList<Profile> profiles;
+
     private static final int EXPORT_FILE = 1;
     private static final int IMPORT_FILE = 2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         profileManager = new ProfileManager(this);
         createLayout();
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            if(checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
-                requestPermissions(
-                        new String[]{Manifest.permission.POST_NOTIFICATIONS},
-                        100
-                );
-            }
+
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+                checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS)
+                        != PackageManager.PERMISSION_GRANTED) {
+
+            requestPermissions(
+                    new String[]{Manifest.permission.POST_NOTIFICATIONS},
+                    100
+            );
         }
     }
 
@@ -48,9 +55,10 @@ public class MainActivity extends AppCompatActivity {
 
     private void createLayout() {
         ScrollView scrollView = new ScrollView(this);
+
         layout = new LinearLayout(this);
         layout.setOrientation(LinearLayout.VERTICAL);
-        layout.setPadding(20,100,20,20);
+        layout.setPadding(20, 100, 20, 20);
 
         TextView title = new TextView(this);
         title.setText("SMB Random Picker");
@@ -72,19 +80,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showProfiles() {
-        while(layout.getChildCount() > 2) {
+        while(layout.getChildCount() > 2)
             layout.removeViewAt(2);
-        }
 
-        for(Profile profile : profiles) {
-            ProfileCard card = new ProfileCard(this,profile,this);
-            layout.addView(card);
-        }
+        for(Profile profile : profiles)
+            layout.addView(new ProfileCard(this, profile, this));
 
         Button updateAll = new Button(this);
         updateAll.setText("Aktualizovat všechny profily");
         updateAll.setTextColor(Color.WHITE);
-        updateAll.setBackgroundColor(Color.rgb(33,150,243));
+        updateAll.setBackgroundColor(Color.rgb(33, 150, 243));
         updateAll.setOnClickListener(v -> updateAllProfiles());
         layout.addView(updateAll);
 
@@ -109,7 +114,7 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-        Scheduler.updateAllProfiles(this,profiles);
+        Scheduler.updateAllProfiles(this, profiles);
 
         Toast.makeText(
                 this,
@@ -119,48 +124,68 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void openAddProfile() {
-        Intent intent = new Intent(this,AddProfileActivity.class);
-        startActivity(intent);
+        startActivity(
+                new Intent(this, AddProfileActivity.class)
+        );
     }
 
     public void openSettings(Profile profile) {
-        Intent intent = new Intent(this,AddProfileActivity.class);
-        intent.putExtra("profileName",profile.getName());
+        Intent intent =
+                new Intent(this, AddProfileActivity.class);
+
+        intent.putExtra(
+                "profileName",
+                profile.getName()
+        );
+
         startActivity(intent);
     }
 
     public void openEpisodes(Profile profile) {
-        Intent intent = new Intent(this,EpisodeActivity.class);
-        intent.putExtra("profileName",profile.getName());
+        Intent intent =
+                new Intent(this, EpisodeActivity.class);
+
+        intent.putExtra(
+                "profileName",
+                profile.getName()
+        );
+
         startActivity(intent);
     }
 
     public void deleteProfile(Profile profile) {
-        Scheduler.cancel(this,profile);
         profileManager.deleteProfile(profile);
+
         Toast.makeText(
                 this,
                 "Profil smazán",
                 Toast.LENGTH_SHORT
         ).show();
+
         loadProfiles();
     }
 
     private void exportProfiles() {
-        Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
+        Intent intent =
+                new Intent(Intent.ACTION_CREATE_DOCUMENT);
+
         intent.setType("application/json");
         intent.putExtra(
                 Intent.EXTRA_TITLE,
                 "SMB_Random_Picker_backup.json"
         );
-        startActivityForResult(intent,EXPORT_FILE);
+
+        startActivityForResult(intent, EXPORT_FILE);
     }
 
     private void importProfiles() {
-        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        Intent intent =
+                new Intent(Intent.ACTION_OPEN_DOCUMENT);
+
         intent.setType("application/json");
         intent.addCategory(Intent.CATEGORY_OPENABLE);
-        startActivityForResult(intent,IMPORT_FILE);
+
+        startActivityForResult(intent, IMPORT_FILE);
     }
 
     @Override
@@ -169,28 +194,42 @@ public class MainActivity extends AppCompatActivity {
             int resultCode,
             Intent data
     ) {
-        super.onActivityResult(requestCode,resultCode,data);
-        if(resultCode != RESULT_OK || data == null) {
+        super.onActivityResult(
+                requestCode,
+                resultCode,
+                data
+        );
+
+        if(resultCode != RESULT_OK || data == null)
             return;
-        }
 
         try {
             Uri uri = data.getData();
 
             if(requestCode == EXPORT_FILE) {
-                BackupManager backup = new BackupManager(this);
-                File temp = backup.exportProfiles();
-                FileInputStream input = new FileInputStream(temp);
-                OutputStream output = getContentResolver().openOutputStream(uri);
+                BackupManager backup =
+                        new BackupManager(this);
+
+                File temp =
+                        backup.exportProfiles();
+
+                FileInputStream input =
+                        new FileInputStream(temp);
+
+                OutputStream output =
+                        getContentResolver()
+                                .openOutputStream(uri);
+
                 byte[] buffer = new byte[4096];
                 int length;
 
-                while((length = input.read(buffer)) > 0) {
-                    output.write(buffer,0,length);
-                }
+                while((length = input.read(buffer)) > 0)
+                    output.write(buffer, 0, length);
 
                 input.close();
-                output.close();
+
+                if(output != null)
+                    output.close();
 
                 Toast.makeText(
                         this,
@@ -200,30 +239,37 @@ public class MainActivity extends AppCompatActivity {
             }
 
             if(requestCode == IMPORT_FILE) {
-                File temp = new File(getCacheDir(),"import.json");
-                FileInputStream input =
-                        (FileInputStream)getContentResolver().openInputStream(uri);
+                File temp =
+                        new File(
+                                getCacheDir(),
+                                "import.json"
+                        );
+
+                java.io.InputStream input =
+                        getContentResolver()
+                                .openInputStream(uri);
+
                 OutputStream output =
                         new java.io.FileOutputStream(temp);
+
                 byte[] buffer = new byte[4096];
                 int length;
 
-                while((length = input.read(buffer)) > 0) {
-                    output.write(buffer,0,length);
-                }
+                while((length = input.read(buffer)) > 0)
+                    output.write(buffer, 0, length);
 
                 input.close();
                 output.close();
 
-                BackupManager backup = new BackupManager(this);
-                backup.importProfiles(temp);
+                new BackupManager(this)
+                        .importProfiles(temp);
 
-                ArrayList<Profile> imported = profileManager.getProfiles();
+                ArrayList<Profile> imported =
+                        profileManager.getProfiles();
 
                 for(Profile profile : imported) {
-                    if(profile.isAutoUpdate()) {
-                        Scheduler.schedule(this,profile);
-                    }
+                    if(profile.isAutoUpdate())
+                        Scheduler.schedule(this, profile);
                 }
 
                 Toast.makeText(
@@ -234,13 +280,14 @@ public class MainActivity extends AppCompatActivity {
 
                 loadProfiles();
             }
-        }
-        catch(Exception e) {
+
+        } catch(Exception e) {
             Toast.makeText(
                     this,
                     "Chyba: " + e.getMessage(),
                     Toast.LENGTH_LONG
             ).show();
+
             e.printStackTrace();
         }
     }
@@ -257,21 +304,16 @@ public class MainActivity extends AppCompatActivity {
                 grantResults
         );
 
-        if(requestCode == 100) {
-            if(grantResults.length > 0 &&
-                    grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(
-                        this,
-                        "Oznámení povolena",
-                        Toast.LENGTH_SHORT
-                ).show();
-            } else {
-                Toast.makeText(
-                        this,
-                        "Oznámení nejsou povolena",
-                        Toast.LENGTH_LONG
-                ).show();
-            }
+        if(requestCode == 100 &&
+                grantResults.length > 0 &&
+                grantResults[0] ==
+                        PackageManager.PERMISSION_GRANTED) {
+
+            Toast.makeText(
+                    this,
+                    "Oznámení povolena",
+                    Toast.LENGTH_SHORT
+            ).show();
         }
     }
 }
