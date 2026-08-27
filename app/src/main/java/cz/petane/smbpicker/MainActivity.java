@@ -14,6 +14,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.work.Data;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkManager;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -85,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
 
         for(Profile profile : profiles)
             layout.addView(new ProfileCard(this, profile, v ->
-                    Scheduler.updateProfile(this, profile)
+                    updateProfile(profile)
             ));
 
         Button updateAll = new Button(this);
@@ -104,6 +107,23 @@ public class MainActivity extends AppCompatActivity {
         importButton.setText("Import nastavení");
         importButton.setOnClickListener(v -> importProfiles());
         layout.addView(importButton);
+    }
+
+    private void updateProfile(Profile profile) {
+        Data data = new Data.Builder()
+                .putString("profileName", profile.getName())
+                .putBoolean("manualUpdate", false)
+                .build();
+
+        OneTimeWorkRequest request =
+                new OneTimeWorkRequest.Builder(
+                        AutoUpdateWorker.class
+                )
+                .setInputData(data)
+                .build();
+
+        WorkManager.getInstance(this)
+                .enqueue(request);
     }
 
     private void updateAllProfiles() {
@@ -135,11 +155,7 @@ public class MainActivity extends AppCompatActivity {
         Intent intent =
                 new Intent(this, AddProfileActivity.class);
 
-        intent.putExtra(
-                "profileName",
-                profile.getName()
-        );
-
+        intent.putExtra("profileName", profile.getName());
         startActivity(intent);
     }
 
@@ -147,11 +163,7 @@ public class MainActivity extends AppCompatActivity {
         Intent intent =
                 new Intent(this, EpisodeActivity.class);
 
-        intent.putExtra(
-                "profileName",
-                profile.getName()
-        );
-
+        intent.putExtra("profileName", profile.getName());
         startActivity(intent);
     }
 
@@ -196,11 +208,7 @@ public class MainActivity extends AppCompatActivity {
             int resultCode,
             Intent data
     ) {
-        super.onActivityResult(
-                requestCode,
-                resultCode,
-                data
-        );
+        super.onActivityResult(requestCode, resultCode, data);
 
         if(resultCode != RESULT_OK || data == null)
             return;
@@ -209,11 +217,8 @@ public class MainActivity extends AppCompatActivity {
             Uri uri = data.getData();
 
             if(requestCode == EXPORT_FILE) {
-                BackupManager backup =
-                        new BackupManager(this);
-
                 File temp =
-                        backup.exportProfiles();
+                        new BackupManager(this).exportProfiles();
 
                 FileInputStream input =
                         new FileInputStream(temp);
@@ -242,10 +247,7 @@ public class MainActivity extends AppCompatActivity {
 
             if(requestCode == IMPORT_FILE) {
                 File temp =
-                        new File(
-                                getCacheDir(),
-                                "import.json"
-                        );
+                        new File(getCacheDir(), "import.json");
 
                 java.io.InputStream input =
                         getContentResolver()
@@ -263,8 +265,7 @@ public class MainActivity extends AppCompatActivity {
                 input.close();
                 output.close();
 
-                new BackupManager(this)
-                        .importProfiles(temp);
+                new BackupManager(this).importProfiles(temp);
 
                 ArrayList<Profile> imported =
                         profileManager.getProfiles();
@@ -305,17 +306,5 @@ public class MainActivity extends AppCompatActivity {
                 permissions,
                 grantResults
         );
-
-        if(requestCode == 100 &&
-                grantResults.length > 0 &&
-                grantResults[0] ==
-                        PackageManager.PERMISSION_GRANTED) {
-
-            Toast.makeText(
-                    this,
-                    "Oznámení povolena",
-                    Toast.LENGTH_SHORT
-            ).show();
-        }
     }
 }
