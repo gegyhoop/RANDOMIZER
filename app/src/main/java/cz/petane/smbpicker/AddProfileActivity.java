@@ -3,14 +3,15 @@ package cz.petane.smbpicker;
 import android.app.TimePickerDialog;
 import android.os.Bundle;
 import android.widget.*;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 public class AddProfileActivity extends AppCompatActivity {
 
-    private EditText name, server, username, password, source, target, count;
+    private EditText name, server, username, password, source, target, count, history;
     private CheckBox anonymous, autoUpdate;
     private Button timeButton;
-    private int updateHour = 20, updateMinute = 0, historySize = 3;
+    private int updateHour = 20, updateMinute = 0;
     private ProfileManager profileManager;
     private Profile editingProfile;
 
@@ -61,9 +62,7 @@ public class AddProfileActivity extends AppCompatActivity {
         autoUpdate.setText("Automatická aktualizace");
         layout.addView(autoUpdate);
 
-        historySize = 3;
-
-        EditText history = addField(layout, "Počet posledních výběrů bez opakování");
+        history = addField(layout, "Počet posledních výběrů bez opakování");
         history.setText("3");
 
         timeButton = new Button(this);
@@ -82,18 +81,6 @@ public class AddProfileActivity extends AppCompatActivity {
         layout.addView(save);
 
         setContentView(layout);
-
-        history.setOnFocusChangeListener((v, hasFocus) -> {
-            if(!hasFocus) {
-                try {
-                    historySize = Math.max(0,
-                            Integer.parseInt(history.getText().toString()));
-                } catch(Exception e) {
-                    historySize = 3;
-                    history.setText("3");
-                }
-            }
-        });
     }
 
     private void updateTimeText() {
@@ -118,14 +105,10 @@ public class AddProfileActivity extends AppCompatActivity {
     }
 
     private void loadExistingProfile() {
-        String profileName =
-                getIntent().getStringExtra("profileName");
-
+        String profileName = getIntent().getStringExtra("profileName");
         if(profileName == null) return;
 
-        editingProfile =
-                profileManager.getProfileById(profileName);
-
+        editingProfile = profileManager.getProfileById(profileName);
         if(editingProfile == null) return;
 
         name.setText(editingProfile.getName());
@@ -135,20 +118,18 @@ public class AddProfileActivity extends AppCompatActivity {
         source.setText(editingProfile.getSource());
         target.setText(editingProfile.getTarget());
         count.setText(String.valueOf(editingProfile.getCount()));
-
         anonymous.setChecked(editingProfile.isAnonymous());
         autoUpdate.setChecked(editingProfile.isAutoUpdate());
 
+        history.setText(String.valueOf(editingProfile.getHistorySize()));
+
         updateHour = editingProfile.getUpdateHour();
         updateMinute = editingProfile.getUpdateMinute();
-        historySize = editingProfile.getHistorySize();
-
         updateTimeText();
     }
 
     private void testConnection() {
         Profile profile = new Profile();
-
         profile.setServer(server.getText().toString());
         profile.setSource(source.getText().toString());
         profile.setTarget(target.getText().toString());
@@ -157,22 +138,18 @@ public class AddProfileActivity extends AppCompatActivity {
         profile.setPassword(password.getText().toString());
 
         new Thread(() -> {
-            boolean result =
-                    new SmbManager(profile).testConnection();
+            boolean result = new SmbManager(profile).testConnection();
 
-            runOnUiThread(() ->
-                    Toast.makeText(
-                            this,
-                            result ? "Připojení OK" : "Připojení selhalo",
-                            Toast.LENGTH_LONG
-                    ).show()
-            );
+            runOnUiThread(() -> Toast.makeText(
+                    this,
+                    result ? "Připojení OK" : "Připojení selhalo",
+                    Toast.LENGTH_LONG
+            ).show());
         }).start();
     }
 
     private void saveProfile() {
-        if(editingProfile == null)
-            editingProfile = new Profile();
+        if(editingProfile == null) editingProfile = new Profile();
 
         editingProfile.setName(name.getText().toString());
         editingProfile.setServer(server.getText().toString());
@@ -184,7 +161,6 @@ public class AddProfileActivity extends AppCompatActivity {
         editingProfile.setAutoUpdate(autoUpdate.isChecked());
         editingProfile.setUpdateHour(updateHour);
         editingProfile.setUpdateMinute(updateMinute);
-        editingProfile.setHistorySize(historySize);
 
         try {
             editingProfile.setCount(
@@ -192,6 +168,14 @@ public class AddProfileActivity extends AppCompatActivity {
             );
         } catch(Exception e) {
             editingProfile.setCount(1);
+        }
+
+        try {
+            editingProfile.setHistorySize(
+                    Math.max(0, Integer.parseInt(history.getText().toString()))
+            );
+        } catch(Exception e) {
+            editingProfile.setHistorySize(3);
         }
 
         profileManager.updateProfile(editingProfile);
