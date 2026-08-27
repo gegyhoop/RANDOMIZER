@@ -57,19 +57,29 @@ public class EpisodePicker {
                     filtered.add(file);
             }
 
-            if(filtered.size() < profile.getCount())
-                filtered = available;
+            if(filtered.size() < profile.getCount()) {
+                for(int h = profile.getHistorySize() - 1; h >= 0; h--) {
+                    blocked = history.getBlocked(profile.getName(), h);
+                    filtered.clear();
 
-            int count =
-                    Math.min(
-                            profile.getCount(),
-                            filtered.size()
-                    );
+                    for(String file : available) {
+                        if(!blocked.contains(file))
+                            filtered.add(file);
+                    }
+
+                    if(filtered.size() >= profile.getCount())
+                        break;
+                }
+            }
+
+            int count = Math.min(
+                    profile.getCount(),
+                    filtered.size()
+            );
 
             for(int i = 0; i < count; i++) {
                 int index =
                         (int)(Math.random() * filtered.size());
-
                 selected.add(filtered.remove(index));
             }
 
