@@ -1,5 +1,7 @@
 package cz.petane.smbpicker;
 
+import android.content.Context;
+
 public class Profile {
 
     private String name;
@@ -14,95 +16,48 @@ public class Profile {
     private boolean autoUpdate;
     private int updateHour = 20;
     private int updateMinute = 0;
+    private int historySize = 3;
 
-    public Profile() {
-    }
+    private transient Context context;
 
-    public String getName() {
-        return name;
-    }
+    public Profile() {}
 
-    public void setName(String name) {
-        this.name = name;
-    }
+    public String getName() { return name; }
+    public void setName(String v) { name = v; }
 
-    public String getServer() {
-        return server;
-    }
+    public String getServer() { return server; }
+    public void setServer(String v) { server = v; }
 
-    public void setServer(String server) {
-        this.server = server;
-    }
+    public String getUsername() { return username; }
+    public void setUsername(String v) { username = v; }
 
-    public String getUsername() {
-        return username;
-    }
+    public String getPassword() { return password; }
+    public void setPassword(String v) { password = v; }
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
+    public String getSource() { return source; }
+    public void setSource(String v) { source = v; }
 
-    public String getPassword() {
-        return password;
-    }
+    public String getTarget() { return target; }
+    public void setTarget(String v) { target = v; }
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
+    public boolean isAnonymous() { return anonymous; }
+    public void setAnonymous(boolean v) { anonymous = v; }
 
-    public String getSource() {
-        return source;
-    }
+    public int getCount() { return count; }
+    public void setCount(int v) { count = v; }
 
-    public void setSource(String source) {
-        this.source = source;
-    }
+    public boolean isAutoUpdate() { return autoUpdate; }
+    public void setAutoUpdate(boolean v) { autoUpdate = v; }
 
-    public String getTarget() {
-        return target;
-    }
+    public int getUpdateHour() { return updateHour; }
+    public void setUpdateHour(int v) { updateHour = v; }
 
-    public void setTarget(String target) {
-        this.target = target;
-    }
+    public int getUpdateMinute() { return updateMinute; }
+    public void setUpdateMinute(int v) { updateMinute = v; }
 
-    public boolean isAnonymous() {
-        return anonymous;
-    }
+    public int getHistorySize() { return historySize; }
+    public void setHistorySize(int v) { historySize = v; }
 
-    public void setAnonymous(boolean anonymous) {
-        this.anonymous = anonymous;
-    }
-
-    public int getCount() {
-        return count;
-    }
-
-    public void setCount(int count) {
-        this.count = count;
-    }
-
-    public boolean isAutoUpdate() {
-        return autoUpdate;
-    }
-
-    public void setAutoUpdate(boolean autoUpdate) {
-        this.autoUpdate = autoUpdate;
-    }
-
-    public int getUpdateHour() {
-        return updateHour;
-    }
-
-    public void setUpdateHour(int updateHour) {
-        this.updateHour = updateHour;
-    }
-
-    public int getUpdateMinute() {
-        return updateMinute;
-    }
-
-    public void setUpdateMinute(int updateMinute) {
-        this.updateMinute = updateMinute;
-    }
+    public Context getContext() { return context; }
+    public void setContext(Context v) { context = v; }
 }
