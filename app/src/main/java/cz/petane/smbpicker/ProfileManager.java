@@ -19,149 +19,77 @@ public class ProfileManager {
         this.context = context;
     }
 
-
     public ArrayList<Profile> getProfiles() {
-
         try {
+            String json = context.getSharedPreferences(PREF, 0)
+                    .getString(KEY, "");
 
-            String json =
-                    context
-                            .getSharedPreferences(PREF, 0)
-                            .getString(KEY, "");
+            if(json.isEmpty()) return new ArrayList<>();
 
+            Type type = new TypeToken<ArrayList<Profile>>(){}.getType();
+            ArrayList<Profile> profiles = new Gson().fromJson(json, type);
 
-            if(json.isEmpty()) {
-                return new ArrayList<>();
-            }
+            if(profiles == null) return new ArrayList<>();
 
-
-            Type type =
-                    new TypeToken<ArrayList<Profile>>(){}.getType();
-
-
-            ArrayList<Profile> profiles =
-                    new Gson().fromJson(json, type);
-
-
-            if(profiles == null) {
-                return new ArrayList<>();
-            }
-
+            for(Profile profile : profiles)
+                profile.setContext(context);
 
             return profiles;
 
-
         } catch(Exception e) {
-
             return new ArrayList<>();
         }
     }
 
-
-
     public void saveProfiles(ArrayList<Profile> profiles) {
+        for(Profile profile : profiles)
+            profile.setContext(context);
 
-        String json =
-                new Gson().toJson(profiles);
-
-
-        context
-                .getSharedPreferences(PREF, 0)
+        context.getSharedPreferences(PREF, 0)
                 .edit()
-                .putString(KEY, json)
+                .putString(KEY, new Gson().toJson(profiles))
                 .apply();
     }
 
-
-
     public Profile getProfileById(String id) {
-
-        ArrayList<Profile> profiles =
-                getProfiles();
-
-
-        for(Profile profile : profiles) {
-
+        for(Profile profile : getProfiles()) {
             if(profile.getName() != null &&
-                    profile.getName().equals(id)) {
-
+                    profile.getName().equals(id))
                 return profile;
-            }
         }
 
-
-        return new Profile();
+        return null;
     }
-
-
 
     public void updateProfile(Profile profile) {
-
-        ArrayList<Profile> profiles =
-                getProfiles();
-
-
-        boolean updated = false;
-
+        ArrayList<Profile> profiles = getProfiles();
 
         for(int i = 0; i < profiles.size(); i++) {
-
-            Profile old =
-                    profiles.get(i);
-
-
-            if(old.getName() != null &&
-                    old.getName().equals(profile.getName())) {
-
-
+            if(profiles.get(i).getName() != null &&
+                    profiles.get(i).getName().equals(profile.getName())) {
                 profiles.set(i, profile);
-
-                updated = true;
-
-                break;
+                saveProfiles(profiles);
+                return;
             }
         }
 
-
-
-        if(!updated) {
-
-            profiles.add(profile);
-        }
-
-
+        profiles.add(profile);
         saveProfiles(profiles);
     }
-
-
 
     public void deleteProfile(Profile profile) {
+        Scheduler.cancel(context, profile);
 
-        Scheduler.cancel(
-                context,
-                profile
+        new EpisodeHistoryManager(context)
+                .clear(profile.getName());
+
+        ArrayList<Profile> profiles = getProfiles();
+
+        profiles.removeIf(p ->
+                p.getName() != null &&
+                p.getName().equals(profile.getName())
         );
-
-
-        ArrayList<Profile> profiles =
-                getProfiles();
-
-
-        for(int i = profiles.size() - 1; i >= 0; i--) {
-
-            Profile item =
-                    profiles.get(i);
-
-
-            if(item.getName() != null &&
-                    item.getName().equals(profile.getName())) {
-
-                profiles.remove(i);
-            }
-        }
-
 
         saveProfiles(profiles);
     }
-
 }
