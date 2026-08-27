@@ -17,6 +17,8 @@ public class Profile {
     private int updateHour = 20;
     private int updateMinute = 0;
 
+    private int historySize = 3;
+
     private transient Context context;
 
     public Profile() {}
@@ -53,6 +55,9 @@ public class Profile {
 
     public int getUpdateMinute() { return updateMinute; }
     public void setUpdateMinute(int updateMinute) { this.updateMinute = updateMinute; }
+
+    public int getHistorySize() { return historySize; }
+    public void setHistorySize(int historySize) { this.historySize = historySize; }
 
     public Context getContext() { return context; }
     public void setContext(Context context) { this.context = context; }
