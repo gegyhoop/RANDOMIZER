@@ -84,7 +84,9 @@ public class MainActivity extends AppCompatActivity {
             layout.removeViewAt(2);
 
         for(Profile profile : profiles)
-            layout.addView(new ProfileCard(this, profile, this));
+            layout.addView(new ProfileCard(this, profile, v ->
+                    Scheduler.updateProfile(this, profile)
+            ));
 
         Button updateAll = new Button(this);
         updateAll.setText("Aktualizovat všechny profily");
