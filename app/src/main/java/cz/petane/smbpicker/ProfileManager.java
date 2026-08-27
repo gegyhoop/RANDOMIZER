@@ -1,10 +1,8 @@
 package cz.petane.smbpicker;
 
 import android.content.Context;
-
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 
@@ -12,7 +10,6 @@ public class ProfileManager {
 
     private static final String PREF = "profiles";
     private static final String KEY = "data";
-
     private final Context context;
 
     public ProfileManager(Context context) {
@@ -21,29 +18,22 @@ public class ProfileManager {
 
     public ArrayList<Profile> getProfiles() {
         try {
-            String json = context.getSharedPreferences(PREF, 0)
-                    .getString(KEY, "");
-
+            String json = context.getSharedPreferences(PREF, 0).getString(KEY, "");
             if(json.isEmpty()) return new ArrayList<>();
 
             Type type = new TypeToken<ArrayList<Profile>>(){}.getType();
             ArrayList<Profile> profiles = new Gson().fromJson(json, type);
-
             if(profiles == null) return new ArrayList<>();
 
-            for(Profile profile : profiles)
-                profile.setContext(context);
-
+            for(Profile p : profiles) p.setContext(context);
             return profiles;
-
         } catch(Exception e) {
             return new ArrayList<>();
         }
     }
 
     public void saveProfiles(ArrayList<Profile> profiles) {
-        for(Profile profile : profiles)
-            profile.setContext(context);
+        for(Profile p : profiles) p.setContext(context);
 
         context.getSharedPreferences(PREF, 0)
                 .edit()
@@ -52,12 +42,9 @@ public class ProfileManager {
     }
 
     public Profile getProfileById(String id) {
-        for(Profile profile : getProfiles()) {
-            if(profile.getName() != null &&
-                    profile.getName().equals(id))
-                return profile;
-        }
-
+        for(Profile p : getProfiles())
+            if(p.getName() != null && p.getName().equals(id))
+                return p;
         return null;
     }
 
@@ -79,12 +66,9 @@ public class ProfileManager {
 
     public void deleteProfile(Profile profile) {
         Scheduler.cancel(context, profile);
-
-        new EpisodeHistoryManager(context)
-                .clear(profile.getName());
+        new EpisodeHistoryManager(context).clear(profile.getName());
 
         ArrayList<Profile> profiles = getProfiles();
-
         profiles.removeIf(p ->
                 p.getName() != null &&
                 p.getName().equals(profile.getName())
