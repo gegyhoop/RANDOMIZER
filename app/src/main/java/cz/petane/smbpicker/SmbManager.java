@@ -1,315 +1,144 @@
 package cz.petane.smbpicker;
 
+import java.util.ArrayList;
+import java.util.List;
 
 import jcifs.CIFSContext;
 import jcifs.config.PropertyConfiguration;
-import jcifs.context.BaseContext;
+import jcifs.context.SingletonContext;
 import jcifs.smb.NtlmPasswordAuthenticator;
 import jcifs.smb.SmbFile;
 
-import java.util.Properties;
-
-
-
 public class SmbManager {
 
-
     private final Profile profile;
-
     private final CIFSContext context;
 
-
-
-    public SmbManager(Profile profile){
-
-
+    public SmbManager(Profile profile) {
         this.profile = profile;
 
-
         try {
-
-
-            Properties props =
-                    new Properties();
-
-
-
-            props.setProperty(
-                    "jcifs.smb.client.minVersion",
-                    "SMB202"
-            );
-
-
-            props.setProperty(
-                    "jcifs.smb.client.maxVersion",
-                    "SMB210"
-            );
-
-
+            PropertyConfiguration config =
+                    new PropertyConfiguration(
+                            SingletonContext.getInstance().getConfig().getProperties()
+                    );
 
             CIFSContext base =
-                    new BaseContext(
-                            new PropertyConfiguration(props)
-                    );
+                    SingletonContext.getInstance().withConfig(config);
 
-
-
-            if(!profile.isAnonymous()){
-
-
-                base =
-                        base.withCredentials(
-                                new NtlmPasswordAuthenticator(
-                                        "",
-                                        profile.getUsername(),
-                                        profile.getPassword()
-                                )
-                        );
-
-
-            }
-
-
-
-            context = base;
-
-
-
-        }
-        catch(Exception e){
-
-
-            throw new RuntimeException(e);
-
-
-        }
-
-
-    }
-
-
-
-
-
-
-    public boolean testConnection(){
-
-
-        try{
-
-
-            SmbFile file =
-                    new SmbFile(
-                            getPath(profile.getSource()),
-                            context
-                    );
-
-
-            return file.exists();
-
-
-        }
-        catch(Exception e){
-
-
-            e.printStackTrace();
-
-            return false;
-
-
-        }
-
-
-    }
-
-
-
-
-
-
-
-    public SmbFile[] listFolder(String folder)
-            throws Exception {
-
-
-        SmbFile dir =
-                new SmbFile(
-                        getPath(folder),
-                        context
+            if(profile.isAnonymous()) {
+                context = base.withCredentials(
+                        new NtlmPasswordAuthenticator(null, null, null)
                 );
-
-
-        return dir.listFiles();
-
-
+            } else {
+                context = base.withCredentials(
+                        new NtlmPasswordAuthenticator(
+                                profile.getUsername(),
+                                profile.getPassword()
+                        )
+                );
+            }
+        } catch(Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
+    private SmbFile folder(String path) throws Exception {
+        String server = profile.getServer();
 
+        if(!server.endsWith("/"))
+            server += "/";
 
+        if(path.startsWith("/"))
+            path = path.substring(1);
 
+        return new SmbFile(
+                "smb://" + server + path,
+                context
+        );
+    }
 
+    public boolean testConnection() {
+        try {
+            SmbFile source = folder(profile.getSource());
+            SmbFile target = folder(profile.getTarget());
 
+            return source.exists() &&
+                    source.isDirectory() &&
+                    target.exists() &&
+                    target.isDirectory();
 
+        } catch(Exception e) {
+            return false;
+        }
+    }
+
+    public SmbFile[] listFolder(String path) {
+        try {
+            return folder(path).listFiles();
+        } catch(Exception e) {
+            return null;
+        }
+    }
 
     public boolean moveFile(
-            String fromFolder,
-            String toFolder,
-            String filename
-    ){
-
-
-        try{
-
-
+            String fromPath,
+            String toPath,
+            String fileName
+    ) {
+        try {
             SmbFile from =
                     new SmbFile(
-                            getPath(fromFolder)
-                                    + filename,
-                            context
+                            folder(fromPath),
+                            fileName
                     );
-
-
 
             SmbFile to =
                     new SmbFile(
-                            getPath(toFolder)
-                                    + filename,
-                            context
+                            folder(toPath),
+                            fileName
                     );
 
-
+            if(!from.exists() || !from.isFile())
+                return false;
 
             from.renameTo(to);
 
+            return !from.exists() && to.exists();
 
-
-            return true;
-
-
-        }
-        catch(Exception e){
-
-
-            e.printStackTrace();
-
+        } catch(Exception e) {
             return false;
-
-
         }
-
-
     }
 
-
-
-
-
-
-
-
     public int moveAll(
-            String fromFolder,
-            String toFolder
-    ){
-
-
+            String fromPath,
+            String toPath
+    ) {
         int moved = 0;
 
-
-        try{
-
-
-            SmbFile folder =
-                    new SmbFile(
-                            getPath(fromFolder),
-                            context
-                    );
-
-
-
+        try {
             SmbFile[] files =
-                    folder.listFiles();
-
-
-
+                    listFolder(fromPath);
 
             if(files == null)
                 return 0;
 
-
-
-
-            for(SmbFile file : files){
-
-
-                if(!file.isFile())
-                    continue;
-
-
-
-                if(moveFile(
-                        fromFolder,
-                        toFolder,
-                        file.getName()
-                )){
-
-
+            for(SmbFile file : files) {
+                if(file.isFile() &&
+                        moveFile(
+                                fromPath,
+                                toPath,
+                                file.getName()
+                        )) {
                     moved++;
-
-
                 }
-
-
             }
 
-
-
-        }
-        catch(Exception e){
-
-
+        } catch(Exception e) {
             e.printStackTrace();
-
-
         }
-
-
 
         return moved;
-
-
     }
-
-
-
-
-
-
-
-
-
-    private String getPath(String folder){
-
-
-        while(folder.startsWith("/")){
-
-
-            folder =
-                    folder.substring(1);
-
-
-        }
-
-
-
-        return "smb://"
-                + profile.getServer()
-                + "/"
-                + folder
-                + "/";
-
-
-    }
-
-
 }
