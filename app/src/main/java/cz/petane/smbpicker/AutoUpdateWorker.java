@@ -28,32 +28,27 @@ public class AutoUpdateWorker extends Worker {
         try {
 
             String profileName =
-                    getInputData()
-                            .getString("profileName");
+                    getInputData().getString("profileName");
 
             boolean manualUpdate =
-                    getInputData()
-                            .getBoolean(
-                                    "manualUpdate",
-                                    false
-                            );
+                    getInputData().getBoolean(
+                            "manualUpdate",
+                            false
+                    );
 
             boolean lastManualUpdate =
-                    getInputData()
-                            .getBoolean(
-                                    "lastManualUpdate",
-                                    false
-                            );
+                    getInputData().getBoolean(
+                            "lastManualUpdate",
+                            false
+                    );
 
             String manualUpdateId =
-                    getInputData()
-                            .getString(
-                                    "manualUpdateId"
-                            );
+                    getInputData().getString(
+                            "manualUpdateId"
+                    );
 
-            if(profileName == null) {
+            if(profileName == null)
                 return Result.failure();
-            }
 
             ProfileManager manager =
                     new ProfileManager(
@@ -61,26 +56,24 @@ public class AutoUpdateWorker extends Worker {
                     );
 
             Profile profile =
-                    manager.getProfileById(
-                            profileName
-                    );
+                    manager.getProfileById(profileName);
 
             if(profile == null ||
-                    profile.getName() == null) {
-
+                    profile.getName() == null)
                 return Result.failure();
-            }
 
             EpisodePicker picker =
-                    new EpisodePicker(profile);
+                    new EpisodePicker(
+                            profile,
+                            getApplicationContext()
+                    );
 
             List<String> files =
                     picker.prepareEpisodes();
 
             if(!manualUpdate) {
 
-                if(files != null &&
-                        !files.isEmpty()) {
+                if(files != null && !files.isEmpty()) {
 
                     NotificationHelper.showNotification(
                             getApplicationContext(),
@@ -98,10 +91,8 @@ public class AutoUpdateWorker extends Worker {
             }
 
             if(manualUpdateId == null ||
-                    manualUpdateId.isEmpty()) {
-
+                    manualUpdateId.isEmpty())
                 return Result.failure();
-            }
 
             Context context =
                     getApplicationContext();
@@ -118,16 +109,11 @@ public class AutoUpdateWorker extends Worker {
                             null
                     );
 
-            if(!manualUpdateId.equals(
-                    currentUpdateId
-            )) {
-
+            if(!manualUpdateId.equals(currentUpdateId))
                 return Result.failure();
-            }
 
             String key =
-                    "updated_files_" +
-                            manualUpdateId;
+                    "updated_files_" + manualUpdateId;
 
             Set<String> storedFiles =
                     preferences.getStringSet(
@@ -136,16 +122,13 @@ public class AutoUpdateWorker extends Worker {
                     );
 
             LinkedHashSet<String> allFiles =
-                    new LinkedHashSet<>(
-                            storedFiles
-                    );
+                    new LinkedHashSet<>(storedFiles);
 
             if(files != null) {
 
                 for(String file : files) {
 
-                    if(file != null &&
-                            !file.isEmpty()) {
+                    if(file != null && !file.isEmpty()) {
 
                         allFiles.add(
                                 profile.getName()
@@ -158,18 +141,13 @@ public class AutoUpdateWorker extends Worker {
 
             preferences
                     .edit()
-                    .putStringSet(
-                            key,
-                            allFiles
-                    )
+                    .putStringSet(key, allFiles)
                     .apply();
 
             if(lastManualUpdate) {
 
                 ArrayList<String> notificationFiles =
-                        new ArrayList<>(
-                                allFiles
-                        );
+                        new ArrayList<>(allFiles);
 
                 NotificationHelper
                         .showManualUpdateNotification(
