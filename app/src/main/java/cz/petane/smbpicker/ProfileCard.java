@@ -269,4 +269,3 @@ public class ProfileCard extends LinearLayout {
         manager.updateProfile(profile);
     }
 }
-``
