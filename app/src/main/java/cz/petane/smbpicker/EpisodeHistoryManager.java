@@ -29,25 +29,24 @@ public class EpisodeHistoryManager {
                     new JSONArray(prefs.getString(profile, "[]"));
 
             for(int i = 0; i < history.length(); i++) {
-                JSONArray selection = history.getJSONArray(i);
+                JSONArray json = history.getJSONArray(i);
                 Set<String> files = new HashSet<>();
 
-                for(int j = 0; j < selection.length(); j++)
-                    files.add(selection.getString(j));
+                for(int j = 0; j < json.length(); j++)
+                    files.add(json.getString(j));
 
                 result.add(files);
             }
-        } catch(Exception ignored) {
-        }
+        } catch(Exception ignored) {}
 
         return result;
     }
 
-    public Set<String> getBlocked(String profile, int selections) {
+    public Set<String> getBlocked(String profile, int count) {
         Set<String> blocked = new HashSet<>();
         List<Set<String>> history = getHistory(profile);
 
-        for(int i = 0; i < selections && i < history.size(); i++)
+        for(int i = 0; i < count && i < history.size(); i++)
             blocked.addAll(history.get(i));
 
         return blocked;
@@ -57,28 +56,26 @@ public class EpisodeHistoryManager {
         try {
             List<Set<String>> history = getHistory(profile);
 
-            Set<String> selection = new HashSet<>(files);
-            history.add(0, selection);
+            history.add(0, new HashSet<>(files));
 
             while(history.size() > 3)
                 history.remove(history.size() - 1);
 
-            JSONArray result = new JSONArray();
+            JSONArray json = new JSONArray();
 
             for(Set<String> set : history) {
-                JSONArray selectionJson = new JSONArray();
+                JSONArray selection = new JSONArray();
 
                 for(String file : set)
-                    selectionJson.put(file);
+                    selection.put(file);
 
-                result.put(selectionJson);
+                json.put(selection);
             }
 
             prefs.edit()
-                    .putString(profile, result.toString())
+                    .putString(profile, json.toString())
                     .apply();
 
-        } catch(Exception ignored) {
-        }
+        } catch(Exception ignored) {}
     }
 }
