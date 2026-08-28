@@ -78,4 +78,10 @@ public class EpisodeHistoryManager {
 
         } catch(Exception ignored) {}
     }
+
+    public void clear(String profile) {
+        prefs.edit()
+                .remove(profile)
+                .apply();
+    }
 }
