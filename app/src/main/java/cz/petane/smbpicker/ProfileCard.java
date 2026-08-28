@@ -1,6 +1,8 @@
 package cz.petane.smbpicker;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -16,7 +18,14 @@ public class ProfileCard extends LinearLayout {
         super(context);
 
         setOrientation(VERTICAL);
-        setPadding(16, 16, 16, 16);
+        setPadding(20, 20, 20, 20);
+
+        GradientDrawable background =
+                new GradientDrawable();
+
+        background.setColor(Color.TRANSPARENT);
+        background.setStroke(2, Color.GRAY);
+        setBackground(background);
 
         TextView name = new TextView(context);
         name.setText(profile.getName());
@@ -31,21 +40,24 @@ public class ProfileCard extends LinearLayout {
         Button settings = new Button(context);
         settings.setText("Nastavení");
         settings.setOnClickListener(v ->
-                ((MainActivity) context).openSettings(profile)
+                ((MainActivity) context)
+                        .openSettings(profile)
         );
         addView(settings);
 
         Button episodes = new Button(context);
-        episodes.setText("Epizody");
+        episodes.setText("Zobrazit epizody");
         episodes.setOnClickListener(v ->
-                ((MainActivity) context).openEpisodes(profile)
+                ((MainActivity) context)
+                        .openEpisodes(profile)
         );
         addView(episodes);
 
         Button delete = new Button(context);
         delete.setText("Smazat");
         delete.setOnClickListener(v ->
-                ((MainActivity) context).deleteProfile(profile)
+                ((MainActivity) context)
+                        .deleteProfile(profile)
         );
         addView(delete);
     }
