@@ -29,42 +29,71 @@ public class EpisodeHistoryManager {
                     new JSONArray(prefs.getString(profile, "[]"));
 
             for(int i = 0; i < history.length(); i++) {
-                JSONArray json = history.getJSONArray(i);
-                Set<String> files = new HashSet<>();
+
+                JSONArray json =
+                        history.getJSONArray(i);
+
+                Set<String> files =
+                        new HashSet<>();
 
                 for(int j = 0; j < json.length(); j++)
                     files.add(json.getString(j));
 
                 result.add(files);
             }
+
         } catch(Exception ignored) {}
 
         return result;
     }
 
-    public Set<String> getBlocked(String profile, int count) {
-        Set<String> blocked = new HashSet<>();
-        List<Set<String>> history = getHistory(profile);
+    public Set<String> getBlocked(
+            String profile,
+            int count
+    ) {
 
-        for(int i = 0; i < count && i < history.size(); i++)
+        Set<String> blocked =
+                new HashSet<>();
+
+        List<Set<String>> history =
+                getHistory(profile);
+
+        for(int i = 0;
+                i < count && i < history.size();
+                i++) {
+
             blocked.addAll(history.get(i));
+        }
 
         return blocked;
     }
 
-    public void add(String profile, List<String> files) {
+    public void add(
+            String profile,
+            List<String> files,
+            int maxHistory
+    ) {
+
         try {
-            List<Set<String>> history = getHistory(profile);
 
-            history.add(0, new HashSet<>(files));
+            List<Set<String>> history =
+                    getHistory(profile);
 
-            while(history.size() > 3)
+            history.add(
+                    0,
+                    new HashSet<>(files)
+            );
+
+            while(history.size() > maxHistory)
                 history.remove(history.size() - 1);
 
-            JSONArray json = new JSONArray();
+            JSONArray json =
+                    new JSONArray();
 
             for(Set<String> set : history) {
-                JSONArray selection = new JSONArray();
+
+                JSONArray selection =
+                        new JSONArray();
 
                 for(String file : set)
                     selection.put(file);
@@ -73,13 +102,17 @@ public class EpisodeHistoryManager {
             }
 
             prefs.edit()
-                    .putString(profile, json.toString())
+                    .putString(
+                            profile,
+                            json.toString()
+                    )
                     .apply();
 
         } catch(Exception ignored) {}
     }
 
     public void clear(String profile) {
+
         prefs.edit()
                 .remove(profile)
                 .apply();
