@@ -56,7 +56,15 @@ public class EpisodePicker {
             ArrayList<String> pool =
                     new ArrayList<>();
 
-            for(int h = 3; h >= 0; h--) {
+            int historySize =
+                    Math.max(
+                            0,
+                            profile.getHistorySize()
+                    );
+
+            for(int h = historySize;
+                    h >= 0;
+                    h--) {
 
                 Set<String> blocked =
                         history.getBlocked(
@@ -98,7 +106,8 @@ public class EpisodePicker {
 
             history.add(
                     profile.getName(),
-                    selected
+                    selected,
+                    historySize
             );
 
         } catch(Exception e) {
